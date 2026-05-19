@@ -1,0 +1,28 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,700;0,900;1,400;1,700;1,900&family=Mali:wght@400;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Nunito", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Mali", cursive, sans-serif;
+  --color-bg-primary: #FFF8E7;
+  --color-accent-yellow: #FFDE59;
+  --color-accent-blue: #38b6ff;
+}
+
+body {
+  background-color: var(--color-bg-primary);
+  font-family: var(--font-sans);
+  color: #1A1A1A;
+}
+
+.text-stroke-white {
+  -webkit-text-stroke: 2px white;
+}
+
+.shadow-solid {
+  box-shadow: 4px 4px 0px 0px rgba(0, 0, 0, 1);
+}
+
+.shadow-solid-sm {
+  box-shadow: 2px 2px 0px 0px rgba(0, 0, 0, 1);
+}
