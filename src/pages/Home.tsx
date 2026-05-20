@@ -44,14 +44,14 @@ export function Home() {
       </AnimatePresence>
 
       {/* Hero Section */}
-      <section className="relative py-8 md:py-12 flex flex-col items-center justify-center mx-auto max-w-4xl z-10">
+      <section className="relative py-8 md:py-12 flex flex-col items-center justify-center mx-auto max-w-4xl z-10 mb-[120px]">
         <motion.h1
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="font-display font-black text-black uppercase tracking-tighter mb-8 relative flex flex-col items-center"
         >
-          <span className="text-6xl md:text-[80px] leading-none mb-2 md:mb-4 relative z-10">Lạy Online</span>
-          <div className="relative text-5xl md:text-[75px] leading-none transform -rotate-2 mt-2">
+          <span className="text-6xl md:text-[80px] text-[50px] leading-none mb-2 md:mb-4 relative z-10">Lạy Online</span>
+          <div className="relative text-5xl md:text-[75px] text-[45px] leading-none transform -rotate-2 mt-2">
             <span
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center text-white select-none whitespace-nowrap"
               style={{ WebkitTextStroke: '16px white', textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
@@ -73,33 +73,24 @@ export function Home() {
       </section>
 
       {/* Rooms Section */}
-      <section className="grid md:grid-cols-[1fr_auto_1fr] gap-8 md:gap-3 items-stretch my-12 md:mt-40 relative max-w-[1600px] mx-auto z-0 px-4">
+      <section className="grid lg:grid-cols-[1fr_auto_1fr] gap-12 lg:gap-3 items-stretch my-12 relative max-w-[1600px] mx-auto z-0 px-4">
 
         {/* CENTER ACTION */}
-        <div className="flex flex-col items-center justify-start order-2 z-30 pt-6 md:pt-4 relative w-full md:min-w-[200px] mb-8 md:mb-0">
+        <div className="flex flex-col items-center justify-start order-2 z-30 pt-6 md:py-15 relative w-full lg:min-w-[200px] mb-20 lg:mb-0">
           <div className="relative mb-6 md:mb-10 group cursor-pointer" onClick={handlePray}>
-
             <svg className="absolute -top-8 md:-top-10 left-1/2 -translate-x-1/2 w-16 md:w-20 h-8 md:h-10 text-black opacity-70" viewBox="0 0 100 40" fill="none" stroke="currentColor" strokeWidth="3">
               <path d="M10 30 Q 25 10 40 30 T 70 30 T 90 10" strokeLinecap="round" />
             </svg>
-
             <div className="relative w-44 sm:w-56 h-auto transition-transform group-hover:-translate-y-2 group-active:translate-y-1">
-              <img
-                src="/images/img-4.png"
-                alt="Speech Bubble"
-                className="w-full h-auto drop-shadow-xl"
-              />
-
+              <img src="/images/img-4.png" alt="Speech Bubble" className="w-full h-auto drop-shadow-xl" />
               <div className="absolute inset-0 flex items-center justify-center p-4 md:p-6">
                 <h4 className="font-black text-lg md:text-xl text-center leading-tight tracking-tighter text-black">
                   Chọn phòng <br /> và lạy thôi!
                 </h4>
               </div>
             </div>
-
             <MousePointer2 className="absolute right-0 bottom-2 md:bottom-4 w-10 h-10 md:w-12 md:h-12 text-black fill-white drop-shadow-md transform rotate-12 transition-transform group-hover:scale-110" />
           </div>
-
           <div className="flex flex-col items-center text-center">
             <p className="font-black text-base md:text-lg text-gray-800 leading-tight text-center">
               Lạy xong thấy <br /> đời đẹp hơn hẳn!
@@ -112,11 +103,11 @@ export function Home() {
 
         {/* Buddha Room */}
         <div className="col-span-1 order-1 relative">
-          <div className="hidden md:block absolute bottom-[calc(100%-10px)] left-8 z-20 pb-2 pointer-events-none">
+          <div className="absolute bottom-[calc(100%-5px)] left-4 md:left-8 z-20 pb-1 pointer-events-none">
             <div className="relative">
-              <img src="/images/img-1.png" alt="Buddha Character" className="w-[200px] lg:w-[240px] h-auto object-contain" />
-              <div className="absolute top-2/3 -right-24 md:-right-80 transform -translate-y-1/2 -rotate-5 whitespace-nowrap">
-                <h3 className="font-black text-3xl md:text-5xl text-yellow-400 drop-shadow-[3px_3px_0_#000] uppercase italic tracking-tighter leading-none">
+              <img src="/images/img-1.png" alt="Buddha Character" className="w-[130px] md:w-[200px] lg:w-[240px] h-auto object-contain" />
+              <div className="absolute top-2/3 -right-30 md:-right-60 lg:-right-50 transform -translate-y-1/2 -rotate-5 whitespace-nowrap">
+                <h3 className="font-black text-2xl md:text-5xl text-yellow-400 drop-shadow-[2px_2px_0_#000] lg:drop-shadow-[3px_3px_0_#000] uppercase italic tracking-tighter leading-none">
                   Lạy đi <br /> đừng ngại!
                 </h3>
               </div>
@@ -154,11 +145,10 @@ export function Home() {
 
         {/* Jesus Room */}
         <div className="col-span-1 order-3 relative">
-          <div className="hidden md:block absolute bottom-[calc(100%-10px)] right-8 z-20 pb-2 pointer-events-none">
+          <div className="absolute bottom-[calc(100%-5px)] right-4 md:right-8 z-20 pb-1 pointer-events-none">
             <div className="relative">
-              <img src="/images/img-2.png" alt="Crying Character" className="w-[200px] lg:w-[240px] h-auto object-contain" />
-              {/* FAITH > WIFI */}
-              <div className="absolute top-2/3 -left-28 md:-left-80 transform -translate-y-1/2 -rotate-5 whitespace-nowrap">
+              <img src="/images/img-2.png" alt="Crying Character" className="w-[130px] md:w-[200px] lg:w-[240px] h-auto object-contain" />
+              <div className="absolute top-2/3 -left-30 md:-left-48 lg:-left-50 transform -translate-y-1/2 -rotate-5 whitespace-nowrap">
                 <h3 className="font-black text-4xl md:text-6xl text-blue-900 uppercase italic tracking-tighter opacity-90 leading-none">
                   FAITH <br /> <span className="text-blue-600">&gt; WIFI</span>
                 </h3>
@@ -196,20 +186,9 @@ export function Home() {
         </div>
       </section>
 
-      {activeRoom && (
-        <div className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50">
-          <button
-            onClick={handlePray}
-            className="bg-red-500 hover:bg-red-400 text-white px-12 py-6 rounded-full font-black text-2xl border-4 border-black shadow-[0_8px_0_0_#000] hover:shadow-[0_6px_0_0_#000] hover:translate-y-[2px] active:translate-y-[8px] active:shadow-none transition-all flex items-center gap-3"
-          >
-            <span className="text-4xl animate-bounce">🙏</span> LẠY!
-          </button>
-        </div>
-      )}
-
-      {/* Stats Grid */}
+      {/* STATS */}
       <section className="bg-[var(--color-bg-primary)] border border-black/10 rounded-3xl py-10 px-6 mt-16 shadow-sm max-w-[1540px] mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 divide-y md:divide-y-0 md:divide-x divide-black/5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 divide-y md:divide-y-0 lg:divide-x divide-black/5">
           {[
             { icon: <Users className="w-12 h-12 text-blue-500" />, label: "Tổng người tham gia", value: state.totalMembers, unit: "thành viên" },
             { icon: <Heart className="w-10 h-10 text-red-500 fill-red-400" />, label: "Tổng lượt lạy & cầu nguyện", value: state.totalPrayers, unit: "lượt" },
@@ -217,7 +196,7 @@ export function Home() {
             { icon: <Activity className="w-10 h-10 text-yellow-500" />, label: "Đang online", value: state.onlineMembers, unit: "người" },
             { icon: <CalendarDays className="w-10 h-10 text-purple-500" />, label: "Ngày đẹp lạy nhiều", value: state.bestDay, unit: "(Ai cũng biết mà 😄)", isText: true },
           ].map((item, i) => (
-            <div key={i} className="flex items-center justify-center md:justify-start gap-4 px-4 py-2 md:py-0">
+            <div key={i} className="flex items-center justify-center md:justify-start gap-4 px-4 py-2 md:py-4 lg:py-0">
               <div className="shrink-0">{item.icon}</div>
               <div className="text-left">
                 <p className="text-xs font-bold text-gray-500 uppercase tracking-tighter leading-none mb-1">{item.label}</p>
@@ -232,25 +211,18 @@ export function Home() {
       </section>
 
       <section className="my-5 max-w-[1600px] mx-auto px-4">
-        <div className="text-center mb-16 relative">
+        <div className="text-center mb-16 md:mb-5 pt-10 relative">
           <div className="inline-block relative z-10 px-12 py-3">
-            {/* Lớp dạ quang 1: Nét quẹt chính */}
-            <div
-              className="absolute inset-0 bg-yellow-200 -rotate-1 skew-x-12 opacity-90 rounded-sm -z-10"
-            ></div>
-
-            <div
-              className="absolute inset-x-2 inset-y-1 bg-yellow-200 rotate-2 -skew-x-6 opacity-70 rounded-sm -z-10"
-            ></div>
-
-            <h2 className="font-display font-black text-2xl md:text-3xl uppercase tracking-tighter text-black relative">
+            <div className="absolute inset-0 bg-yellow-200 -rotate-1 skew-x-12 opacity-90 rounded-sm -z-10"></div>
+            <div className="absolute inset-x-2 inset-y-1 bg-yellow-200 rotate-2 -skew-x-6 opacity-70 rounded-sm -z-10"></div>
+            <h2 className="font-display font-black text-2xl md:text-3xl text-xl uppercase tracking-tighter text-black relative">
               Vì sao nên lạy online?
             </h2>
           </div>
         </div>
 
-        <div className="flex flex-col lg:flex-row items-stretch justify-between gap-6 relative mt-12">
-          <div className="flex-1 grid grid-cols-1 md:grid-cols-4 gap-4 w-full">
+        <div className="flex flex-col xl:flex-row items-stretch justify-between gap-6 relative mt-12">
+          <div className="flex-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 w-full">
             {[
               { title: "Tâm an, không bực", desc: "Lạy xong tự nhiên thấy lòng nhẹ tênh!", img: "/images/status-1.png", color: "bg-blue-100" },
               { title: "Phúc đức tăng tiến", desc: "Tích tiểu thành đại, phúc đức đầy nhà!", img: "/images/status-2.png", color: "bg-green-100" },
@@ -259,7 +231,6 @@ export function Home() {
             ].map((item, i) => (
               <div key={i} className="bg-white border border-black/20 rounded-2xl py-2 px-1 flex items-center gap-4 relative overflow-hidden hover:border-black/40 transition-colors shadow-sm">
                 <img src={item.img} alt={item.title} className="w-20 h-20 md:w-24 md:h-24 object-contain shrink-0" />
-
                 <div className="flex-1">
                   <div className={`inline-block px-3 py-1 rounded-full ${item.color} mb-2`}>
                     <h4 className="font-black text-[10px] md:text-xs text-gray-800">{item.title}</h4>
