@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, NavLink } from "react-router-dom";
 import { Users, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedNumber } from "./AnimatedNumber";
@@ -11,10 +11,10 @@ export function Header() {
 
   const navLinks = [
     { name: "Trang chủ", path: "/", active: true },
-    { name: "Hướng dẫn", path: "/" },
-    { name: "Thống kê", path: "/" },
-    { name: "Cộng đồng", path: "/" },
-    { name: "Về chúng tôi", path: "/" },
+    { name: "Hướng dẫn", path: "/instructions" },
+    { name: "Thống kê", path: "/stats" },
+    { name: "Cộng đồng", path: "/community" },
+    { name: "Về chúng tôi", path: "/about" },
   ];
 
   return (
@@ -37,18 +37,21 @@ export function Header() {
         </div>
 
         {/* DESKTOP NAV */}
-        <nav className="hidden lg:flex items-center gap-6 xl:gap-8 font-bold text-sm">
+         <nav className="hidden lg:flex items-center gap-8 font-bold text-sm">
           {navLinks.map((link) => (
-            <Link
+            <NavLink
               key={link.name}
               to={link.path}
-              className={`${link.active
-                  ? "text-orange-500 underline decoration-2 underline-offset-4"
+              className={({ isActive }) => 
+                `transition-colors whitespace-nowrap ${
+                  isActive 
+                  ? "text-orange-500 underline decoration-2 underline-offset-8" 
                   : "text-gray-700 hover:text-orange-500"
-                } transition-colors whitespace-nowrap`}
+                }`
+              }
             >
               {link.name}
-            </Link>
+            </NavLink>
           ))}
         </nav>
 

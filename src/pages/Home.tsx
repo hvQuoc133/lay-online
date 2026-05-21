@@ -187,7 +187,7 @@ export function Home() {
       </section>
 
       {/* STATS */}
-      <section className="bg-[var(--color-bg-primary)] border border-black/10 rounded-3xl py-10 px-6 mt-16 shadow-sm max-w-[1540px] mx-auto">
+      <section className="bg-[var(--color-bg-primary)] border-[2px] border-[oklch(70.5%_0.213_47.604)]/30 rounded-3xl py-10 px-6 mt-16 shadow-sm max-w-[1540px] mx-auto">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 divide-y md:divide-y-0 lg:divide-x divide-black/5">
           {[
             { icon: <Users className="w-12 h-12 text-blue-500" />, label: "Tổng người tham gia", value: state.totalMembers, unit: "thành viên" },
@@ -235,7 +235,7 @@ export function Home() {
                   <div className={`inline-block px-3 py-1 rounded-full ${item.color} mb-2`}>
                     <h4 className="font-black text-[10px] md:text-xs text-gray-800">{item.title}</h4>
                   </div>
-                  <p className="text-[11px] font-bold text-gray-500 leading-tight">
+                  <p className="text-[12px] font-bold text-gray-500 leading-tight">
                     {item.desc}
                   </p>
                 </div>

@@ -4,6 +4,7 @@ import { PrayerProvider } from "./contexts/PrayerContext";
 import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { Home } from "./pages/Home";
+import { Instructions } from "./pages/Instructions";
 
 // Define the Layout wrapper that contains repeating UI
 function Layout({ children }: { children: React.ReactNode }) {
@@ -34,6 +35,7 @@ export default function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/instructions" element={<Instructions />} />
             {/* Future pages can be easily added here: 
                 <Route path="/about" element={<About />} /> 
                 <Route path="/community" element={<Community />} /> 
