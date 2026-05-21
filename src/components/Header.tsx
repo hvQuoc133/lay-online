@@ -11,6 +11,7 @@ export function Header() {
 
   const navLinks = [
     { name: "Trang chủ", path: "/", active: true },
+    { name: "Phòng tích đức", path: "/buddhaRoom" },
     { name: "Hướng dẫn", path: "/instructions" },
     { name: "Thống kê", path: "/stats" },
     { name: "Cộng đồng", path: "/community" },
