@@ -23,7 +23,7 @@ export function Instructions() {
         <div className="max-w-[1600px] pb-20 mx-auto px-4">
 
             <section className="pt-14 pb-2 flex flex-col items-center justify-center text-center">
-                <h1 className="font-display font-black text-5xl md:text-7xl uppercase tracking-tighter text-orange-500">
+                <h1 className="font-display font-black text-5xl md:text-[64px] uppercase tracking-tighter text-orange-500">
                     Hướng dẫn sử dụng
                 </h1>
                 <p className="mt-4 text-sm md:text-lg font-bold text-black uppercase tracking-[0.2em]">
@@ -42,10 +42,10 @@ export function Instructions() {
             <section className="mx-auto px-4 mt-2 relative">
                 <div className="relative  mx-auto">
                     <div className="absolute bottom-[calc(100%-0px)] left-0 md:left-5 z-20 pointer-events-none hidden lg:block">
-                        <img src="/images/img-5.png" alt="Buddha" className="w-40 h-auto" />
+                        <img src="/images/img-5.png" alt="Buddha" className="w-64 xl:w-56 h-auto" />
                     </div>
                     <div className="absolute bottom-[calc(100%-0px)] right-0 md:right-5 z-20 pointer-events-none hidden lg:block">
-                        <img src="/images/img-6.png" alt="Meme" className="w-44 h-auto" />
+                        <img src="/images/img-6.png" alt="Meme" className="w-64 xl:w-56 h-auto" />
                     </div>
 
                     <div className="bg-white border-[2px] border-[oklch(70.5%_0.213_47.604)]/30 rounded-[35px] shadow-sm py-5 relative z-10">

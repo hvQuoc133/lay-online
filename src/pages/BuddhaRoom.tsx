@@ -90,7 +90,7 @@ export function BuddhaRoom() {
                 <div className="text-center flex flex-col items-center">
                     <div className="flex items-center gap-3 text-orange-600 mb-1">
                         <GiLotus size={32} />
-                        <h1 className="font-display font-black text-3xl md:text-4xl uppercase tracking-tighter">Phòng Tích Đức</h1>
+                        <h1 className="font-display font-black text-3xl md:text-[64px] uppercase tracking-tighter">Phòng Tích Đức</h1>
                     </div>
                     <p className="text-xs xl:pt-3 md:text-sm font-bold text-gray-500 flex items-center gap-2">
                         Lạy để tích đức, gieo thiện lành, an yên mỗi ngày 🙏
@@ -206,7 +206,7 @@ export function BuddhaRoom() {
                                     </div>
 
                                     {prayer.rank === 1 && (
-                                        <div className="absolute -bottom-20 xl:-bottom-15 md:-bottom-12 left-1/2 -translate-x-1/2 w-[130%] pointer-events-none z-30">
+                                        <div className="absolute -bottom-20 lg:-bottom-20 md:-bottom-12 left-1/2 -translate-x-1/2 w-[130%] pointer-events-none z-30">
                                             <img
                                                 src="/images/lotus-pedestal.png"
                                                 alt="Lotus Pedestal"

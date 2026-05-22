@@ -50,8 +50,8 @@ export function Home() {
           animate={{ scale: 1, opacity: 1 }}
           className="font-display font-black text-black uppercase tracking-tighter mb-8 relative flex flex-col items-center"
         >
-          <span className="text-6xl md:text-[80px] text-[50px] leading-none mb-2 md:mb-4 relative z-10">Lạy Online</span>
-          <div className="relative text-5xl md:text-[75px] text-[45px] leading-none transform -rotate-2 mt-2">
+          <span className="text-6xl md:text-[72px] text-[50px] leading-none mb-2 md:mb-4 relative z-10">Lạy Online</span>
+          <div className="relative text-5xl md:text-[64px] text-[45px] leading-none transform -rotate-2 mt-2">
             <span
               className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center text-white select-none whitespace-nowrap"
               style={{ WebkitTextStroke: '16px white', textShadow: '0 4px 12px rgba(0,0,0,0.1)' }}
