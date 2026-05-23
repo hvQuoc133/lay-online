@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Users, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 import { AnimatedNumber } from "./AnimatedNumber";
 import { usePrayerContext } from "../contexts/PrayerContext";
+import { useAuth } from "../contexts/AuthContext";
 
 export function Header() {
+  const navigate = useNavigate();
   const { state } = usePrayerContext();
+  const { user, logout } = useAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
@@ -38,15 +41,14 @@ export function Header() {
         </div>
 
         {/* DESKTOP NAV */}
-         <nav className="hidden lg:flex items-center gap-8 font-bold text-sm">
+        <nav className="hidden lg:flex items-center gap-8 font-bold text-sm">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
               to={link.path}
-              className={({ isActive }) => 
-                `transition-colors whitespace-nowrap ${
-                  isActive 
-                  ? "text-orange-500 underline decoration-2 underline-offset-8" 
+              className={({ isActive }) =>
+                `transition-colors whitespace-nowrap ${isActive
+                  ? "text-orange-500 underline decoration-2 underline-offset-8"
                   : "text-gray-700 hover:text-orange-500"
                 }`
               }
@@ -56,17 +58,40 @@ export function Header() {
           ))}
         </nav>
 
-        {/* RIGHT SECTION */}
-        <div className="flex items-center gap-2 sm:gap-4">
+        <div className="flex items-center gap-2 sm:gap-4 z-[110]">
           <div className="hidden sm:flex items-center gap-2 text-xs font-bold bg-white/50 px-3 py-1.5 rounded-full border border-black/10">
             <Users className="w-3.5 h-3.5 text-green-600" />
             <span className="text-green-600"><AnimatedNumber value={state.onlineMembers} /></span>
             <span className="hidden xl:inline text-green-600"> đang lạy</span>
           </div>
 
-          <button className="bg-yellow-400 border-2 border-black px-4 py-2 rounded-full font-black text-xs sm:text-sm shadow-[3px_3px_0_0_#000] active:translate-y-1 active:shadow-none transition-all text-black">
-            Đăng nhập
-          </button>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className="hidden sm:flex flex-col items-end">
+                <span className="text-[11px] font-black text-black leading-none uppercase tracking-tighter">
+                  {user.username}
+                </span>
+                <button
+                  onClick={logout}
+                  className="text-[9px] font-bold text-red-500 hover:underline cursor-pointer mt-1"
+                >
+                  Đăng xuất
+                </button>
+              </div>
+              <img
+                src={user.avatar}
+                className="w-9 h-9 rounded-full border-2 border-orange-500 p-0.5 object-cover shadow-sm"
+                alt="User"
+              />
+            </div>
+          ) : (
+            <button
+              onClick={() => navigate("/login")}
+              className="bg-yellow-400 border-2 border-black px-4 py-2 rounded-full font-black text-xs sm:text-sm shadow-[3px_3px_0_0_#000] active:translate-y-1 active:shadow-none transition-all text-black cursor-pointer"
+            >
+              Đăng nhập
+            </button>
+          )}
 
           <button
             onClick={() => setIsMenuOpen(true)}
@@ -77,7 +102,6 @@ export function Header() {
         </div>
       </div>
 
-      {/* MOBILE MENU MODAL (DRAWER) */}
       <AnimatePresence>
         {isMenuOpen && (
           <>

@@ -1,10 +1,15 @@
 import express from "express";
 import path from "path";
 import { createServer as createViteServer } from "vite";
+import cors from 'cors';
+import dotenv from 'dotenv';
 import http from "http";
 import { Server } from "socket.io";
 import apiRoutes from "./backend/routes/api";
 import { setupSockets } from "./backend/sockets/socketManager";
+import authRoutes from './backend/routes/auth';
+
+dotenv.config();
 
 async function startServer() {
   const app = express();
@@ -20,7 +25,18 @@ async function startServer() {
   // Setup websockets
   setupSockets(io);
 
+  
+  // Config Middleware
+  app.use(cors());
+  app.use(express.json());
+
+app.use((req, res, next) => {
+  console.log(`>>> Yêu cầu gửi tới: ${req.method} ${req.url}`);
+  next();
+});
+
   // API endpoints
+  app.use('/api', authRoutes);
   app.use("/api", apiRoutes);
 
   // Vite middleware for development
@@ -30,7 +46,7 @@ async function startServer() {
       appType: "spa",
     });
     app.use((req, res, next) => {
-        vite.middlewares(req, res, next);
+      vite.middlewares(req, res, next);
     });
   } else {
     const distPath = path.join(process.cwd(), "dist");
@@ -46,5 +62,5 @@ async function startServer() {
 }
 
 startServer().catch((e) => {
-    console.error(e);
+  console.error(e);
 });

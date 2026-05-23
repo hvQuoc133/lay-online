@@ -60,7 +60,7 @@ export function Home() {
             <span className="relative text-orange-500 whitespace-nowrap">Phúc Tự Đến!</span>
           </div>
         </motion.h1>
-        <p className="text-lg md:text-xl font-bold relative inline-block z-10 text-gray-800 mt-4 text-center px-4">
+        <div className="text-lg md:text-xl font-bold relative inline-block z-10 text-gray-800 mt-4 text-center px-4">
           Lạy đi bạn ơi, đời bớt stress, tâm an, điểm tăng!
           <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-[60%] h-4 pointer-events-none -z-10">
             <svg viewBox="0 0 200 25" preserveAspectRatio="none" className="w-full h-full text-yellow-400 fill-none">
@@ -69,7 +69,7 @@ export function Home() {
               <path d="M40 16 Q 100 10 160 16" stroke="currentColor" strokeWidth="4" strokeLinecap="round" className="opacity-40" />
             </svg>
           </div>
-        </p>
+        </div>
       </section>
 
       {/* Rooms Section */}
