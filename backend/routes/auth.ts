@@ -68,4 +68,43 @@ router.post('/register', async (req, res) => {
   }
 });
 
+// ROUTE LOGIN WITH GOOGLE
+router.post('/google-login', async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const googleRes = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${token}`);
+    const googleUser: any = await googleRes.json();
+
+    const { sub: googleId, email, name, picture } = googleUser;
+
+    const [rows]: any = await db.execute('SELECT * FROM users WHERE email = ?', [email]);
+    let user = rows[0];
+
+    if (!user) {
+      const [result]: any = await db.execute(
+        'INSERT INTO users (username, email, google_id, avatar, password) VALUES (?, ?, ?, ?, ?)',
+        [name, email, googleId, picture, 'GOOGLE_AUTH']
+      );
+      
+      const [newUser]: any = await db.execute('SELECT * FROM users WHERE id = ?', [result.insertId]);
+      user = newUser[0];
+    } else if (!user.google_id) {
+      await db.execute('UPDATE users SET google_id = ?, avatar = ? WHERE id = ?', [googleId, picture, user.id]);
+      user.avatar = picture;
+    }
+
+    res.json({
+      id: user.id,
+      username: user.username,
+      avatar: user.avatar,
+      role: user.role
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Lỗi xác thực Google' });
+  }
+});
+
 export default router;

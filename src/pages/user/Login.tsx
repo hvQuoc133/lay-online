@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, ArrowLeft } from "lucide-react";
-import { FcGoogle } from "react-icons/fc"; // Icon Google chuẩn
+import { FcGoogle } from "react-icons/fc";
 import { useAuth } from "../../contexts/AuthContext";
+import { useGoogleLogin } from '@react-oauth/google';
 
 export function UserLogin() {
     const [email, setEmail] = useState("");
@@ -11,6 +12,7 @@ export function UserLogin() {
     const [error, setError] = useState("");
     const { login } = useAuth();
     const navigate = useNavigate();
+
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -33,6 +35,34 @@ export function UserLogin() {
         }
     };
 
+    const handleGoogleLogin = useGoogleLogin({
+        onSuccess: async (tokenResponse) => {
+            try {
+                const res = await fetch("/api/google-login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ token: tokenResponse.access_token }),
+                });
+
+                const contentType = res.headers.get("content-type");
+                if (contentType && contentType.indexOf("application/json") !== -1) {
+                    const data = await res.json();
+                    if (res.ok) {
+                        login(data);
+                        navigate("/");
+                    } else {
+                        alert(data.message || "Đăng nhập Google thất bại");
+                    }
+                } else {
+                    console.error("Server khong tra ve JSON, co the do loi 404");
+                }
+            } catch (err) {
+                console.log("Lỗi gọi API Google:", err);
+            }
+        },
+    });
+
+
     return (
         <div className="min-h-[80vh] flex items-center justify-center p-4">
             <div className="bg-white border-4 border-black shadow-[12px_12px_0_0_#000] rounded-[32px] w-full max-w-md p-8 relative">
@@ -45,6 +75,7 @@ export function UserLogin() {
 
                 <button
                     type="button"
+                    onClick={() => handleGoogleLogin()}
                     className="w-full bg-white border-2 border-black py-3 rounded-2xl font-black text-sm shadow-[4px_4px_0_0_#000] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 mb-8 cursor-pointer"
                 >
                     <FcGoogle size={22} /> ĐĂNG NHẬP VỚI GOOGLE

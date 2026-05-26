@@ -11,6 +11,7 @@ import { Stats } from "./pages/Stats";
 import { UserLogin } from "./pages/user/Login";
 import { UserRegister } from "./pages/user/Register";
 import { AdminLogin } from "./pages/admin/AdminLogin";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Define the Layout wrapper that contains repeating UI
 function Layout({ children }: { children: React.ReactNode }) {
@@ -35,26 +36,28 @@ function Layout({ children }: { children: React.ReactNode }) {
 // Ensure your whole application is wrapped with the Provider and Router
 export default function App() {
   return (
-     <AuthProvider> 
-    <PrayerProvider>
-      <BrowserRouter>
-        <Layout>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/instructions" element={<Instructions />} />
-            <Route path="/buddhaRoom" element={<BuddhaRoom />} />
-            <Route path="/stats" element={<Stats />} />
-            <Route path="/login" element={<UserLogin />} />
-            <Route path="/register" element={<UserRegister />} />
-            <Route path="/admin-login" element={<AdminLogin />} />
-            {/* Future pages can be easily added here: 
+    <GoogleOAuthProvider clientId="1041539420586-h88bqsjgn8925jbpengq2leqpij7vc2q.apps.googleusercontent.com">
+      <AuthProvider>
+        <PrayerProvider>
+          <BrowserRouter>
+            <Layout>
+              <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/instructions" element={<Instructions />} />
+                <Route path="/buddhaRoom" element={<BuddhaRoom />} />
+                <Route path="/stats" element={<Stats />} />
+                <Route path="/login" element={<UserLogin />} />
+                <Route path="/register" element={<UserRegister />} />
+                <Route path="/admin-login" element={<AdminLogin />} />
+                {/* Future pages can be easily added here: 
                 <Route path="/about" element={<About />} /> 
                 <Route path="/community" element={<Community />} /> 
             */}
-          </Routes>
-        </Layout>
-      </BrowserRouter>
-    </PrayerProvider>
-     </AuthProvider>
+              </Routes>
+            </Layout>
+          </BrowserRouter>
+        </PrayerProvider>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
