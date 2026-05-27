@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { CheckCircle2, Activity, CalendarDays, Users, Heart, MousePointer2 } from "lucide-react";
 import { GiLotus } from "react-icons/gi";
 import { FaCross } from "react-icons/fa";
@@ -6,10 +7,36 @@ import { motion, AnimatePresence } from "motion/react";
 import { usePrayerContext } from "../contexts/PrayerContext";
 import { AnimatedNumber } from "../components/AnimatedNumber";
 
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+
+interface BackendRoom {
+  id: string;
+  name: string;
+  type: "buddha" | "jesus";
+  current_count: number;
+  capacity: number;
+}
+
 export function Home() {
+  const navigate = useNavigate();
   const { state, pray, joinRoom, leaveRoom } = usePrayerContext();
   const [activeRoom, setActiveRoom] = useState<"buddha" | "jesus" | null>(null);
   const [showPrayAnimation, setShowPrayAnimation] = useState(false);
+  const [rooms, setRooms] = useState<BackendRoom[]>([]);
+
+  useEffect(() => {
+    const fetchRooms = async () => {
+      try {
+        const res = await fetch(`${API_URL}/rooms/all`);
+        const data = await res.json();
+        setRooms(Array.isArray(data) ? data : []);
+      } catch (err) {
+        console.error("Fetch rooms failed:", err);
+      }
+    };
+
+    fetchRooms();
+  }, []);
 
   const handlePray = () => {
     pray();
@@ -18,6 +45,13 @@ export function Home() {
   };
 
   const handleJoinRoom = (room: "buddha" | "jesus") => {
+    const targetRoom = rooms.find((item) => item.type === room);
+
+    if (!targetRoom) {
+      alert(room === "buddha" ? "Chưa có phòng Phật nào. Admin cần tạo phòng trước." : "Chưa có phòng Chúa nào. Admin cần tạo phòng trước.");
+      return;
+    }
+
     if (activeRoom === room) {
       leaveRoom(room);
       setActiveRoom(null);
@@ -25,8 +59,12 @@ export function Home() {
       if (activeRoom) leaveRoom(activeRoom);
       joinRoom(room);
       setActiveRoom(room);
+      navigate(room === "buddha" ? `/buddhaRoom/${targetRoom.id}` : `/jesusRoom/${targetRoom.id}`);
     }
   };
+
+  const buddhaRoom = rooms.find((room) => room.type === "buddha");
+  const jesusRoom = rooms.find((room) => room.type === "jesus");
 
   return (
     <>
@@ -121,7 +159,7 @@ export function Home() {
                   <GiLotus className="w-16 h-16 text-amber-500 drop-shadow-[0_2px_10px_rgba(245,158,11,0.5)] transition-transform duration-500 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-amber-400/20 blur-xl rounded-full -z-10 animate-pulse"></div>
                 </div>
-                <h2 className="text-2xl lg:text-2xl font-black font-display text-orange-600 mb-2">PHÒNG TÍCH ĐỨC</h2>
+                <h2 className="text-2xl lg:text-2xl font-black font-display text-orange-600 mb-2">{buddhaRoom?.name ?? "PHÒNG TÍCH ĐỨC"}</h2>
                 <p className="font-bold text-gray-800 mb-4">Lạy để tâm an, phúc đến</p>
                 <ul className="space-y-2 mb-6 font-bold text-sm text-gray-700">
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Cầu bình an</li>
@@ -133,7 +171,7 @@ export function Home() {
                 </button>
                 <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 mt-5">
                   <Users className="w-4 h-4" />
-                  <span><AnimatedNumber value={state.buddhaRoomActive} /> người đang lạy</span>
+                  <span><AnimatedNumber value={buddhaRoom?.current_count ?? state.buddhaRoomActive} /> người đang lạy</span>
                 </div>
               </div>
               <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-3/6">
@@ -163,7 +201,7 @@ export function Home() {
                   <FaCross className="w-14 h-14 text-blue-700 drop-shadow-[0_2px_10px_rgba(29,78,216,0.4)] transition-transform duration-500 group-hover:rotate-12" />
                   <div className="absolute inset-0 bg-blue-400/10 blur-xl rounded-full -z-10 animate-pulse"></div>
                 </div>
-                <h2 className="text-2xl lg:text-2xl font-black font-display text-blue-700 mb-2">PHÒNG CẦU NGUYỆN</h2>
+                <h2 className="text-2xl lg:text-2xl font-black font-display text-blue-700 mb-2">{jesusRoom?.name ?? "PHÒNG CẦU NGUYỆN"}</h2>
                 <p className="font-bold text-gray-800 mb-4">Cầu nguyện để yêu thương lan tỏa</p>
                 <ul className="space-y-2 mb-6 font-bold text-sm text-gray-700">
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Xin ơn bình an</li>
@@ -175,7 +213,7 @@ export function Home() {
                 </button>
                 <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 mt-5">
                   <Users className="w-4 h-4" />
-                  <span><AnimatedNumber value={state.jesusRoomActive} /> người đang cầu nguyện</span>
+                  <span><AnimatedNumber value={jesusRoom?.current_count ?? state.jesusRoomActive} /> người đang cầu nguyện</span>
                 </div>
               </div>
               <div className="hidden sm:block absolute right-0 top-0 bottom-0 w-3/6">

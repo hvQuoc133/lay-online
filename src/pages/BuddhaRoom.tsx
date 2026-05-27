@@ -1,5 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
+import { useParams } from "react-router-dom";
 import {
     ArrowLeft, Music, Share2, Copy, User,
     Trophy, Flame, Target, Star, Radio,
@@ -9,7 +10,24 @@ import {
 } from "lucide-react";
 import { PiFlowerLotusThin, PiMountainsFill } from "react-icons/pi";
 import { GiLotus } from "react-icons/gi";
+import { FaCross } from "react-icons/fa";
 import { AnimatedNumber } from "../components/AnimatedNumber";
+import { PoseTracker } from "../components/PoseTracker";
+import { useAuth } from "../contexts/AuthContext";
+import { usePrayerContext } from "../contexts/PrayerContext";
+
+const API_URL = import.meta.env.VITE_API_URL || "/api";
+
+interface BackendRoom {
+    id: string;
+    name: string;
+    type: "buddha" | "jesus";
+    capacity: number;
+    current_count: number;
+    total_room_prayers: number;
+    created_by?: number | null;
+    created_at?: string;
+}
 
 const ROOM_DATA = {
     name: "Phòng Tích Đức 🙏",
@@ -61,10 +79,77 @@ const COMMUNITY_CAMS = Array.from({ length: 20 }, (_, i) => ({
 }));
 
 
-export function BuddhaRoom() {
+export function BuddhaRoom({ defaultType = "buddha" }: { defaultType?: "buddha" | "jesus" }) {
+    const { roomId: routeRoomId } = useParams();
+    const { user } = useAuth();
+    const { emitRoomPrayer, joinPrayerRoom, roomStats } = usePrayerContext();
+    const [room, setRoom] = useState<BackendRoom | null>(null);
+    const [roomLoading, setRoomLoading] = useState(true);
+    const [roomError, setRoomError] = useState("");
     const [copied, setCopied] = useState(false);
     const [sortBy, setSortBy] = useState<"count" | "rank" | "name">("count");
     const [isSortOpen, setIsSortOpen] = useState(false);
+    const [prayerBursts, setPrayerBursts] = useState<Array<{ id: number }>>([]);
+    const roomType = room?.type ?? defaultType;
+    const roomId = room?.id ?? routeRoomId ?? `${defaultType}-demo`;
+    const roomName = room?.name ?? (defaultType === "buddha" ? ROOM_DATA.name : "Phong Cau Nguyen");
+    const roomTotalPrayers = roomStats?.roomId === roomId && roomStats.roomTotal !== undefined
+        ? roomStats.roomTotal
+        : room?.total_room_prayers ?? ROOM_DATA.totalPrayers;
+    const isBuddhaRoom = roomType === "buddha";
+
+    useEffect(() => {
+        const fetchRoom = async () => {
+            setRoomLoading(true);
+            setRoomError("");
+
+            try {
+                const endpoint = routeRoomId
+                    ? `${API_URL}/rooms/${routeRoomId}`
+                    : `${API_URL}/rooms/type/${defaultType}`;
+                const res = await fetch(endpoint);
+                const data = await res.json();
+
+                if (!res.ok) {
+                    throw new Error(data?.message || "Khong tai duoc phong");
+                }
+
+                setRoom(data);
+            } catch (err) {
+                console.error("Fetch prayer room failed:", err);
+                setRoom(null);
+                setRoomError(err instanceof Error ? err.message : "Khong tai duoc phong");
+            } finally {
+                setRoomLoading(false);
+            }
+        };
+
+        fetchRoom();
+    }, [defaultType, routeRoomId]);
+
+    useEffect(() => {
+        if (!roomLoading) {
+            joinPrayerRoom(roomId);
+        }
+    }, [joinPrayerRoom, roomId, roomLoading]);
+
+    useEffect(() => {
+        const joinBackendRoom = async () => {
+            if (roomLoading || !room?.id || !user?.id) return;
+
+            try {
+                await fetch(`${API_URL}/rooms/join`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ roomId: room.id, userId: user.id }),
+                });
+            } catch (err) {
+                console.error("Join backend room failed:", err);
+            }
+        };
+
+        joinBackendRoom();
+    }, [room?.id, roomLoading, user?.id]);
 
     const sortedCams = [...COMMUNITY_CAMS].sort((a, b) => {
         if (sortBy === "count") return b.count - a.count;
@@ -74,9 +159,19 @@ export function BuddhaRoom() {
     });
 
     const handleCopy = () => {
-        navigator.clipboard.writeText(ROOM_DATA.id);
+        navigator.clipboard.writeText(roomId);
         setCopied(true);
         setTimeout(() => setCopied(false), 2000);
+    };
+
+    const handleAIPrayer = () => {
+        emitRoomPrayer(roomId, user?.id, roomType);
+
+        const id = Date.now();
+        setPrayerBursts((items) => [...items, { id }]);
+        setTimeout(() => {
+            setPrayerBursts((items) => items.filter((item) => item.id !== id));
+        }, 1200);
     };
 
     return (
@@ -88,18 +183,18 @@ export function BuddhaRoom() {
                 </button>
 
                 <div className="text-center flex flex-col items-center">
-                    <div className="flex items-center gap-3 text-orange-600 mb-1">
-                        <GiLotus size={32} />
-                        <h1 className="font-display font-black text-3xl md:text-[64px] uppercase tracking-tighter">Phòng Tích Đức</h1>
+                    <div className={`flex items-center gap-3 mb-1 ${isBuddhaRoom ? "text-orange-600" : "text-blue-700"}`}>
+                        {isBuddhaRoom ? <GiLotus size={32} /> : <FaCross size={28} />}
+                        <h1 className="font-display font-black text-3xl md:text-[64px] uppercase tracking-tighter">{roomName}</h1>
                     </div>
                     <p className="text-xs xl:pt-3 md:text-sm font-bold text-gray-500 flex items-center gap-2">
-                        Lạy để tích đức, gieo thiện lành, an yên mỗi ngày 🙏
+                        {isBuddhaRoom ? "Lạy để tích đức, gieo thiện lành, an yên mỗi ngày" : "Cầu nguyện để bình an, yêu thương và hy vọng mỗi ngày"}
                     </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-orange-50 text-orange-600 border border-orange-100 rounded-xl font-black text-xs shadow-sm hover:bg-orange-100 transition-all">
-                        <Music size={14} /> Bật nhạc niệm Phật
+                    <button className={`flex items-center gap-2 px-4 py-2 border rounded-xl font-black text-xs shadow-sm transition-all ${isBuddhaRoom ? "bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100" : "bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100"}`}>
+                        <Music size={14} /> {isBuddhaRoom ? "Bật nhạc niệm Phật" : "Bật nhạc cầu nguyện"}
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl font-black text-xs shadow-sm hover:bg-gray-50 transition-all">
                         <Share2 size={14} /> Chia sẻ phòng
@@ -110,17 +205,25 @@ export function BuddhaRoom() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
 
                 <aside className="lg:col-span-2 bg-white border border-black/5 rounded-[30px] p-6 shadow-sm h-full">
-                    <h3 className="font-black text-[14x] text-orange-600 uppercase mb-6 border-b border-black/5 pb-2">Thông tin phòng</h3>
+                    <h3 className={`font-black text-[14x] uppercase mb-6 border-b border-black/5 pb-2 ${isBuddhaRoom ? "text-orange-600" : "text-blue-700"}`}>Thông tin phòng</h3>
 
                     <div className="space-y-6">
+                        {roomLoading && (
+                            <p className="text-[11px] font-bold text-gray-400">Đang tải dữ liệu phòng...</p>
+                        )}
+                        {roomError && (
+                            <p className="text-[11px] font-bold text-amber-600">{roomError}</p>
+                        )}
                         <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase mb-2 flex items-center gap-2"><GiLotus size={12} /> Tên phòng:</p>
-                            <p className="text-sm font-black text-black">{ROOM_DATA.name}</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase mb-2 flex items-center gap-2">
+                                {isBuddhaRoom ? <GiLotus size={12} /> : <FaCross size={11} />} Tên phòng:
+                            </p>
+                            <p className="text-sm font-black text-black">{roomName}</p>
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-gray-400 uppercase mb-2 flex items-center gap-2"><Target size={12} /> ID phòng:</p>
                             <div className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-black/5">
-                                <span className="text-[11px] font-black text-orange-600">{ROOM_DATA.id}</span>
+                                <span className={`text-[11px] font-black ${isBuddhaRoom ? "text-orange-600" : "text-blue-700"}`}>{roomId}</span>
                                 <button onClick={handleCopy} className="text-[9px] font-black text-gray-400 hover:text-black uppercase">{copied ? "Xong!" : "Sao chép"}</button>
                             </div>
                         </div>
@@ -133,7 +236,7 @@ export function BuddhaRoom() {
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Tổng lượt lạy trong phòng:</p>
-                            <p className="text-xl font-black text-black"><AnimatedNumber value={ROOM_DATA.totalPrayers} /> lượt lạy</p>
+                            <p className="text-xl font-black text-black"><AnimatedNumber value={roomTotalPrayers} /> lượt</p>
                         </div>
                         <div>
                             <div className="flex justify-between items-end mb-2">
@@ -150,8 +253,8 @@ export function BuddhaRoom() {
 
                 <main className="lg:col-span-8 flex flex-col gap-6 h-full">
                     <div className="bg-white border border-black/10 rounded-[40px] p-8 shadow-sm h-full flex flex-col relative overflow-visible">
-                        <h3 className="text-center font-black text-[14px] text-orange-600 uppercase">
-                            Top 5 Phật tử lạy nhiều nhất
+                        <h3 className={`text-center font-black text-[14px] uppercase ${isBuddhaRoom ? "text-orange-600" : "text-blue-700"}`}>
+                            {isBuddhaRoom ? "Top 5 Phật tử lạy nhiều nhất" : "Top 5 người cầu nguyện nhiều nhất"}
                         </h3>
 
                         <div className="grid grid-cols-5 gap-3 items-center flex-1 min-h-[420px]">
@@ -314,9 +417,25 @@ export function BuddhaRoom() {
                 </div>
 
                 <div className="lg:col-span-6 flex flex-col h-full bg-white border border-black/10 rounded-[40px] p-6 shadow-sm">
+                    <div className="relative">
+                        <AnimatePresence>
+                            {prayerBursts.map((burst) => (
+                                <motion.div
+                                    key={burst.id}
+                                    initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                                    animate={{ opacity: 1, y: -45, scale: 1 }}
+                                    exit={{ opacity: 0, y: -70, scale: 0.9 }}
+                                    className="pointer-events-none absolute right-6 -top-2 z-50 rounded-full bg-orange-500 px-4 py-2 text-sm font-black text-white shadow-lg"
+                                >
+                                    +1
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
+                    </div>
+
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="font-black text-xs text-orange-600 uppercase tracking-widest">
-                            Cộng đồng Phật tử đang lạy ({COMMUNITY_CAMS.length})
+                        <h3 className={`font-black text-xs uppercase tracking-widest ${isBuddhaRoom ? "text-orange-600" : "text-blue-700"}`}>
+                            {isBuddhaRoom ? "Cộng đồng Phật tử đang lạy" : "Cộng đồng đang cầu nguyện"} ({COMMUNITY_CAMS.length})
                         </h3>
 
                         <div className="flex items-center gap-2">
@@ -387,6 +506,19 @@ export function BuddhaRoom() {
                                 </div>
                             </div>
                         ))}
+                    </div>
+
+                    <div className="mt-6">
+                        <PoseTracker
+                            roomId={roomId}
+                            userId={user?.id}
+                            onPrayerDetected={handleAIPrayer}
+                        />
+                        {roomStats?.roomId === roomId && roomStats.roomTotal !== undefined && (
+                            <p className={`mt-3 text-center text-[11px] font-black uppercase tracking-widest ${isBuddhaRoom ? "text-orange-600" : "text-blue-700"}`}>
+                                Tong phong realtime: {roomStats.roomTotal} luot
+                            </p>
+                        )}
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-black/5 flex flex-col md:flex-row items-center justify-between gap-6 md:gap-4 px-2 md:px-4">
@@ -514,4 +646,8 @@ export function BuddhaRoom() {
             </section>
         </div>
     );
+}
+
+export function JesusRoom() {
+    return <BuddhaRoom defaultType="jesus" />;
 }

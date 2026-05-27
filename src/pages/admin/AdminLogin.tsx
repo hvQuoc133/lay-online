@@ -6,11 +6,40 @@ import { useAuth } from "../../contexts/AuthContext";
 export function AdminLogin() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState(""); // Thêm state báo lỗi
   const { login } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setError("");
+
+    try {
+      // 1. Gọi API Login chung
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // 2. KIỂM TRA QUYỀN: Nếu không phải admin thì từ chối
+        if (data.role !== 'admin') {
+          setError("Tài khoản này không có quyền truy cập Admin!");
+          return;
+        }
+
+        // 3. Nếu đúng là Admin: Lưu vào context và chuyển hướng
+        login(data);
+        navigate("/admin"); // Chuyển sang trang Dashboard Admin
+      } else {
+        setError(data.message || "Đăng nhập thất bại");
+      }
+    } catch (err) {
+      setError("Lỗi kết nối server!");
+    }
   };
 
   return (
@@ -32,14 +61,14 @@ export function AdminLogin() {
                 <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Mã định danh Admin</label>
                 <div className="relative">
                    <HardDrive className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                   <input type="email" required className="w-full bg-white border-2 border-black/10 rounded-xl py-3 pl-12 pr-4 font-bold text-sm outline-none focus:border-red-500 transition-all" placeholder="admin_code" />
+                   <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="w-full bg-white border-2 border-black/10 rounded-xl py-3 pl-12 pr-4 font-bold text-sm outline-none focus:border-red-500 transition-all" placeholder="admin_code" />
                 </div>
              </div>
              <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase text-gray-400 ml-1">Mật khẩu bảo mật</label>
                 <div className="relative">
                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                   <input type="password" required className="w-full bg-white border-2 border-black/10 rounded-xl py-3 pl-12 pr-4 font-bold text-sm outline-none focus:border-red-500 transition-all" placeholder="••••••••" />
+                   <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} required className="w-full bg-white border-2 border-black/10 rounded-xl py-3 pl-12 pr-4 font-bold text-sm outline-none focus:border-red-500 transition-all" placeholder="••••••••" />
                 </div>
              </div>
           </div>
@@ -53,6 +82,7 @@ export function AdminLogin() {
            Security Level: 128-bit Encrypted 🔐
         </p>
       </div>
+      {error && <p className="text-red-500 text-xs font-bold mb-4">⚠️ {error}</p>}
     </div>
   );
 }

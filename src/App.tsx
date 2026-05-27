@@ -6,12 +6,13 @@ import { Header } from "./components/Header";
 import { Footer } from "./components/Footer";
 import { Home } from "./pages/Home";
 import { Instructions } from "./pages/Instructions";
-import { BuddhaRoom } from "./pages/BuddhaRoom";
+import { BuddhaRoom, JesusRoom } from "./pages/BuddhaRoom";
 import { Stats } from "./pages/Stats";
 import { UserLogin } from "./pages/user/Login";
 import { UserRegister } from "./pages/user/Register";
 import { AdminLogin } from "./pages/admin/AdminLogin";
 import { GoogleOAuthProvider } from '@react-oauth/google';
+import { AdminDashboard } from "./pages/admin/AdminDashboard";
 
 // Define the Layout wrapper that contains repeating UI
 function Layout({ children }: { children: React.ReactNode }) {
@@ -45,10 +46,15 @@ export default function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/instructions" element={<Instructions />} />
                 <Route path="/buddhaRoom" element={<BuddhaRoom />} />
+                <Route path="/buddhaRoom/:roomId" element={<BuddhaRoom />} />
+                <Route path="/jesusRoom" element={<JesusRoom />} />
+                <Route path="/jesusRoom/:roomId" element={<JesusRoom />} />
+                <Route path="/rooms/:roomId" element={<BuddhaRoom />} />
                 <Route path="/stats" element={<Stats />} />
                 <Route path="/login" element={<UserLogin />} />
                 <Route path="/register" element={<UserRegister />} />
                 <Route path="/admin-login" element={<AdminLogin />} />
+                <Route path="/admin" element={<AdminDashboard />} /> 
                 {/* Future pages can be easily added here: 
                 <Route path="/about" element={<About />} /> 
                 <Route path="/community" element={<Community />} /> 

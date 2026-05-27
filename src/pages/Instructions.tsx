@@ -56,7 +56,7 @@ export function Instructions() {
                             {quickLinks.map((item, i) => (
                                 <div key={i} className="flex flex-col items-center gap-5 group cursor-pointer px-2">
                                     <div className={`${item.color} w-14 h-14 rounded-full flex items-center justify-center transition-all group-hover:scale-110 shadow-sm`}>
-                                        {React.cloneElement(item.icon as React.ReactElement, { size: 24 })}
+                                        {React.cloneElement(item.icon as React.ReactElement<{ size?: number }>, { size: 24 })}
                                     </div>
                                     <span className="font-black text-[10px] md:text-[12px] uppercase text-gray-500 text-center leading-tight tracking-tighter">
                                         {item.label}
@@ -295,7 +295,7 @@ export function Instructions() {
                         ].map((item, i) => (
                             <div key={i} className="bg-orange-50/50 border border-orange-100 rounded-2xl p-4 flex flex-col items-center text-center shadow-sm hover:bg-orange-100/50 transition-all">
                                 <div className="mb-3 p-2 bg-white border border-orange-100 rounded-full shadow-sm">
-                                    {React.cloneElement(item.icon as React.ReactElement, { size: 20 })}
+                                    {React.cloneElement(item.icon as React.ReactElement<{ size?: number }>, { size: 20 })}
                                 </div>
                                 <p className="text-base font-black text-black leading-none">{item.val}</p>
                                 <p className="text-[11px] font-bold text-gray-500 mt-2 leading-tight">{item.label}</p>

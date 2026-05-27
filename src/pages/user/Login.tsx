@@ -109,7 +109,7 @@ export function UserLogin() {
                             />
                             <span className="text-xs font-bold text-gray-500 group-hover:text-black">Ghi nhớ tôi</span>
                         </label>
-                        <Link to="/forgot-password" size={12} className="text-xs font-bold text-orange-600 hover:underline">Quên mật khẩu?</Link>
+                        <Link to="/forgot-password" className="text-xs font-bold text-orange-600 hover:underline">Quên mật khẩu?</Link>
                     </div>
 
                     <button type="submit" className="w-full bg-yellow-400 hover:bg-yellow-300 border-4 border-black py-4 rounded-2xl font-black text-lg shadow-[6px_6px_0_0_#000] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 cursor-pointer">

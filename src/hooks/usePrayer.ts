@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { io, Socket } from "socket.io-client";
 
 interface AppState {
@@ -9,6 +9,13 @@ interface AppState {
   bestDay: string;
   buddhaRoomActive: number;
   jesusRoomActive: number;
+}
+
+interface RoomStats {
+  roomId: string;
+  userId?: number;
+  total?: number;
+  roomTotal?: number;
 }
 
 const defaultState: AppState = {
@@ -24,6 +31,7 @@ const defaultState: AppState = {
 export function usePrayer() {
   const [socket, setSocket] = useState<Socket | null>(null);
   const [state, setState] = useState<AppState>(defaultState);
+  const [roomStats, setRoomStats] = useState<RoomStats | null>(null);
 
   useEffect(() => {
     // Only connect once
@@ -34,28 +42,44 @@ export function usePrayer() {
       setState(newState);
     });
 
+    newSocket.on("update_stats", (stats: RoomStats) => {
+      setRoomStats(stats);
+    });
+
     return () => {
       newSocket.disconnect();
     };
   }, []);
 
-  const pray = () => {
+  const pray = useCallback(() => {
     if (socket) {
       socket.emit("pray");
     }
-  };
+  }, [socket]);
 
-  const joinRoom = (room: "buddha" | "jesus") => {
+  const joinRoom = useCallback((room: "buddha" | "jesus") => {
     if (socket) {
       socket.emit("joinRoom", room);
     }
-  };
+  }, [socket]);
 
-  const leaveRoom = (room: "buddha" | "jesus") => {
+  const leaveRoom = useCallback((room: "buddha" | "jesus") => {
     if (socket) {
       socket.emit("leaveRoom", room);
     }
-  };
+  }, [socket]);
 
-  return { state, pray, joinRoom, leaveRoom };
+  const joinPrayerRoom = useCallback((roomId: string) => {
+    if (socket) {
+      socket.emit("join_prayer_room", roomId);
+    }
+  }, [socket]);
+
+  const emitRoomPrayer = useCallback((roomId: string, userId?: number, roomType?: "buddha" | "jesus") => {
+    if (socket) {
+      socket.emit("user_prayed", { roomId, userId, roomType });
+    }
+  }, [socket]);
+
+  return { state, roomStats, pray, joinRoom, leaveRoom, joinPrayerRoom, emitRoomPrayer };
 }

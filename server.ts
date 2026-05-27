@@ -8,10 +8,13 @@ import { Server } from "socket.io";
 import apiRoutes from "./backend/routes/api";
 import { setupSockets } from "./backend/sockets/socketManager";
 import authRoutes from './backend/routes/auth';
+import { initDatabase } from './backend/db/initDb';
+import roomRoutes from './backend/routes/room';
 
 dotenv.config();
 
 async function startServer() {
+  await initDatabase();
   const app = express();
   const PORT = 3000;
   const server = http.createServer(app);
@@ -39,8 +42,11 @@ async function startServer() {
   app.get('/api/health', (req, res) => res.json({ status: "ok" }));
 
   // API endpoints
-  app.use('/api', authRoutes);
-  app.use("/api", apiRoutes);
+  app.use('/api/rooms', roomRoutes); 
+  app.use('/api/auth', authRoutes);
+  app.use("/api/others", apiRoutes);
+
+  app.get('/api/test-server', (req, res) => res.json({ message: "Server is ALIVE!" }));
 
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
