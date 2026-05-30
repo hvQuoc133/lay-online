@@ -52,35 +52,11 @@ export function setupSockets(io: Server) {
       state.totalPrayers++;
       state.prayersToday++;
 
-      let total: number | undefined;
-      let roomTotal: number | undefined;
-
       try {
         if (roomId && userId) {
           await ensurePrayerTables();
 
-          await db.execute(
-            "INSERT IGNORE INTO rooms (id, name, type) VALUES (?, ?, ?)",
-            [roomId, `Phong ${roomId}`, roomType === "jesus" ? "jesus" : "buddha"]
-          );
-
-          await db.execute(
-            `INSERT INTO room_members (room_id, user_id, prayers_in_room)
-             VALUES (?, ?, 0)
-             ON DUPLICATE KEY UPDATE room_id = VALUES(room_id)`,
-            [roomId, userId]
-          );
-
-          await db.execute(
-            "UPDATE room_members SET prayers_in_room = prayers_in_room + 1 WHERE room_id = ? AND user_id = ?",
-            [roomId, userId]
-          );
-
-          await db.execute(
-            "UPDATE rooms SET total_room_prayers = total_room_prayers + 1 WHERE id = ?",
-            [roomId]
-          );
-
+          // ✅ Lấy data từ DB (REST API đã update rồi)
           const [memberRows]: any = await db.execute(
             "SELECT prayers_in_room FROM room_members WHERE room_id = ? AND user_id = ?",
             [roomId, userId]
@@ -90,18 +66,22 @@ export function setupSockets(io: Server) {
             [roomId]
           );
 
-          total = memberRows[0]?.prayers_in_room;
-          roomTotal = roomRows[0]?.total_room_prayers;
+          const userTotal = memberRows[0]?.prayers_in_room;
+          const roomTotal = roomRows[0]?.total_room_prayers;
+
+          // ⭐ Broadcast tới room (không update DB, chỉ thông báo)
+          io.to(roomId).emit("update_stats", {
+            roomId,
+            userId,
+            total: userTotal,
+            roomTotal: roomTotal
+          });
         }
       } catch (error) {
         console.error("Socket user_prayed failed:", error);
       }
 
       io.emit("stateUpdate", getState());
-
-      if (roomId) {
-        io.to(roomId).emit("update_stats", { roomId, userId, total, roomTotal });
-      }
     });
 
     socket.on("joinRoom", (room) => {

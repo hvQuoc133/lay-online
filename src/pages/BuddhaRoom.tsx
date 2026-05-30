@@ -161,24 +161,35 @@ export function BuddhaRoom() {
         if (!room?.id || !user?.id) return;
 
         try {
-            // Call REST API to record prayer
+            // 1️⃣ REST API - Lưu vào Database (Primary)
+            const startTime = performance.now();
             const res = await fetch(`${API_URL}/rooms/prayer`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ roomId: room.id, userId: user.id }),
             });
+            const responseTime = performance.now() - startTime;
 
             if (!res.ok) {
-                console.error("Failed to record prayer:", res.statusText);
+                console.error(`❌ Prayer API failed: ${res.status} - ${res.statusText}`);
+                return;
             }
+
+            const data = await res.json();
+            console.log(`✅ Prayer saved: ${responseTime.toFixed(2)}ms`, {
+                userPrayers: data.userPrayers,
+                roomTotal: data.roomTotal
+            });
         } catch (err) {
-            console.error("Prayer recording error:", err);
+            console.error("❌ Prayer recording error:", err);
+            return;
         }
 
-        // Emit socket event for real-time updates
+        // 2️⃣ Socket Emit - Real-time Broadcast (Secondary)
+        // Server sẽ query DB và broadcast data tới tất cả clients
         emitRoomPrayer(roomId, user?.id, "buddha");
 
-        // Show animation burst
+        // 3️⃣ Show animation
         const id = Date.now();
         setPrayerBursts((items) => [...items, { id }]);
         setTimeout(() => setPrayerBursts((items) => items.filter((i) => i.id !== id)), 1200);
