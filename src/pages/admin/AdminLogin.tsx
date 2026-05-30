@@ -15,8 +15,8 @@ export function AdminLogin() {
     setError("");
 
     try {
-      // 1. Gọi API Login chung
-      const response = await fetch("/api/login", {
+      // 1. Gọi API Login chung (/api/auth/login không phải /api/login)
+      const response = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
@@ -76,13 +76,17 @@ export function AdminLogin() {
           <button type="submit" className="w-full bg-red-600 hover:bg-red-500 text-white border-4 border-black py-5 rounded-[24px] font-black text-xl shadow-[8px_8px_0_0_#000] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-4 mt-6 uppercase italic">
             Xác thực Admin <LogIn size={24} />
           </button>
+          {error && (
+            <div className="mt-4 bg-red-50 border-2 border-red-300 rounded-xl p-4">
+              <p className="text-red-600 text-xs font-bold">⚠️ {error}</p>
+            </div>
+          )}
         </form>
 
         <p className="mt-10 text-center text-[10px] font-bold text-gray-300 uppercase tracking-widest">
            Security Level: 128-bit Encrypted 🔐
         </p>
       </div>
-      {error && <p className="text-red-500 text-xs font-bold mb-4">⚠️ {error}</p>}
     </div>
   );
 }

@@ -8,8 +8,8 @@ import {
     Video, UserRoundX, CircleStar, ShieldCheck,
     Anvil
 } from "lucide-react";
-import { PiFlowerLotusThin, PiMountainsFill } from "react-icons/pi";
-import { GiLotus } from "react-icons/gi";
+import { PiMountainsFill } from "react-icons/pi";
+import { FaCross } from "react-icons/fa";
 import { AnimatedNumber } from "../components/AnimatedNumber";
 import { PoseTracker } from "../components/PoseTracker";
 import { useAuth } from "../contexts/AuthContext";
@@ -29,55 +29,51 @@ interface BackendRoom {
 }
 
 const ROOM_DATA = {
-    name: "Phòng Tích Đức 🙏",
-    id: "#TICHDUC2024",
-    host: { name: "Tâm Hướng Phật", isHost: true },
-    totalPrayers: 1248,
-    goal: 1000000,
-    progress: 62,
+    name: "Phòng Cầu Nguyện 🙏",
+    id: "#CAUNGUYEN2024",
+    host: { name: "Con Chúa", isHost: true },
+    totalPrayers: 856,
+    goal: 500000,
+    progress: 45,
 };
 
 const TOP_PRAYERS = [
-    { rank: 2, name: "Phật Tử Tí Hon", count: 842, img: "/images/prayer-2.png", isLive: true },
-    { rank: 4, name: "Sen Hồng Nở", count: 715, img: "/images/prayer-4.png", isLive: true },
-    { rank: 1, name: "Tâm Hướng Phật", count: 1248, img: "/images/prayer-1.png", isLive: true, isHost: true },
-    { rank: 3, name: "Bình An Tự Tại", count: 635, img: "/images/prayer-3.png", isLive: true },
-    { rank: 5, name: "Lạc Thiện", count: 512, img: "/images/prayer-5.png", isLive: true },
+    { rank: 2, name: "Maria Mến Yêu", count: 421, img: "/images/prayer-2.png", isLive: true },
+    { rank: 4, name: "Phaolo Loan Báo", count: 198, img: "/images/prayer-4.png", isLive: true },
+    { rank: 1, name: "Chúa Tế Nhân Lành", count: 542, img: "/images/prayer-1.png", isLive: true, isHost: true },
+    { rank: 3, name: "Giuse Hiền Lành", count: 368, img: "/images/prayer-3.png", isLive: true },
+    { rank: 5, name: "Teresa Hài Đồng", count: 256, img: "/images/prayer-5.png", isLive: true },
 ];
 
 const CAMP_DATA = {
-    name: "Chánh Niệm",
-    level: 3,
-    currentXP: 650,
+    name: "Yêu Thương",
+    level: 2,
+    currentXP: 450,
     maxXP: 1000,
     benefits: [
-        "Tăng 10% hiệu quả lượt lạy",
-        "Nhận điểm thưởng khi đạt mốc",
-        "Top camp nhận huy hiệu đặc biệt"
+        "Tăng 10% hiệu quả cầu nguyện",
+        "Sống tốt mỗi ngày",
+        "Yêu thương mọi người"
     ]
 };
 
 const CHAT_MESSAGES = [
-    { user: "Sen Hồng Nở", msg: "Mỗi ngày lạy một chút tâm an hơn rất nhiều ✨", time: "20:31" },
-    { user: "Phật Tử Tí Hon", msg: "Cố lên mọi người ơi! 💪", time: "20:31" },
-    { user: "Bình An Tự Tại", msg: "Lạy đều, tâm an nhé mọi người 🙏", time: "20:32" },
-    { user: "Lạc Thiện", msg: "Nam mô bổn sư thích ca mâu ni", time: "20:32" },
+    { user: "Maria Mến Yêu", msg: "Cầu xin Chúa ban phước lành ✨", time: "20:31" },
+    { user: "Giuse Hiền Lành", msg: "Bình an cho tất cả mọi người 💪", time: "20:31" },
 ];
 
 const NOTIFICATIONS = [
-    { msg: "Phật Tử Tí Hon vừa đạt 500 lượt lạy! 🔥", time: "2 phút trước" },
-    { msg: "Sen Hồng Nở vừa đạt combo x20! ❤️", time: "5 phút trước" },
-    { msg: "Phòng đã đạt 10,000 lượt lạy! 🙏", time: "10 phút trước" },
+    { msg: "Maria vừa đạt 200 lượt cầu nguyện! 🔥", time: "2 phút trước" },
 ];
 
 const COMMUNITY_CAMS = Array.from({ length: 20 }, (_, i) => ({
     rank: i + 6,
-    name: ["Tâm Hướng Phật", "Minh Tâm", "Diệu Pháp", "An Nhiên", "Hạnh Phúc", "Thiện Lành", "Chân Tâm", "Quảng Đức", "Bảo An", "Tâm Nguyện"][i % 10],
-    count: Math.floor(Math.random() * 500) + 100,
+    name: ["Maria", "Giuse", "Phaolo", "Teresa", "Anna", "Luy", "Gioan", "Đaminh", "Mattheu", "Linh"][i % 10],
+    count: Math.floor(Math.random() * 300) + 50,
     isLive: true
 }));
 
-export function BuddhaRoom() {
+export function JesusRoom() {
     const { roomId: routeRoomId } = useParams();
     const { user } = useAuth();
     const { emitRoomPrayer, joinPrayerRoom, roomStats } = usePrayerContext();
@@ -91,9 +87,8 @@ export function BuddhaRoom() {
     const [isSortOpen, setIsSortOpen] = useState(false);
     const [prayerBursts, setPrayerBursts] = useState<Array<{ id: number }>>([]);
 
-    // Cố định các giá trị cho Phật
-    const roomType = "buddha";
-    const roomId = room?.id ?? routeRoomId ?? `buddha-demo`;
+    const roomType = "jesus";
+    const roomId = room?.id ?? routeRoomId ?? `jesus-demo`;
     const roomName = room?.name ?? ROOM_DATA.name;
     const roomTotalPrayers = roomStats?.roomId === roomId && roomStats.roomTotal !== undefined
         ? roomStats.roomTotal
@@ -101,7 +96,7 @@ export function BuddhaRoom() {
 
     useEffect(() => {
         if (!user) { navigate("/login"); return; }
-        if (!routeRoomId) { navigate(`/rooms/buddha`); }
+        if (!routeRoomId) { navigate(`/rooms/jesus`); }
     }, [user, routeRoomId, navigate]);
 
     useEffect(() => {
@@ -111,7 +106,7 @@ export function BuddhaRoom() {
             try {
                 const endpoint = routeRoomId 
                     ? `${API_URL}/rooms/${routeRoomId}` 
-                    : `${API_URL}/rooms/type/buddha`;
+                    : `${API_URL}/rooms/type/jesus`;
                 const res = await fetch(endpoint);
                 const data = await res.json();
                 if (!res.ok) throw new Error(data?.message || "Khong tai duoc phong");
@@ -176,7 +171,7 @@ export function BuddhaRoom() {
         }
 
         // Emit socket event for real-time updates
-        emitRoomPrayer(roomId, user?.id, "buddha");
+        emitRoomPrayer(roomId, user?.id, "jesus");
 
         // Show animation burst
         const id = Date.now();
@@ -187,19 +182,19 @@ export function BuddhaRoom() {
     return (
         <div className="max-w-[1600px] mx-auto px-4">
             <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-8">
-                <button onClick={() => navigate("/rooms/buddha")} className="flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl font-black text-xs shadow-sm hover:bg-gray-50 transition-all">
+                <button onClick={() => navigate("/rooms/jesus")} className="flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl font-black text-xs shadow-sm hover:bg-gray-50 transition-all">
                     <ArrowLeft size={14} /> Quay lại phòng
                 </button>
                 <div className="text-center flex flex-col items-center">
-                    <div className="flex items-center gap-3 mb-1 text-orange-600">
-                        <GiLotus size={32} />
+                    <div className="flex items-center gap-3 mb-1 text-blue-700">
+                        <FaCross size={28} />
                         <h1 className="font-display font-black text-3xl md:text-[64px] uppercase tracking-tighter">{roomName}</h1>
                     </div>
-                    <p className="text-xs xl:pt-3 md:text-sm font-bold text-gray-500 flex items-center gap-2">Lạy để tích đức, gieo thiện lành, an yên mỗi ngày</p>
+                    <p className="text-xs xl:pt-3 md:text-sm font-bold text-gray-500 flex items-center gap-2">Cầu nguyện để bình an, yêu thương và hy vọng mỗi ngày</p>
                 </div>
                 <div className="flex items-center gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 border rounded-xl font-black text-xs shadow-sm transition-all bg-orange-50 text-orange-600 border-orange-100 hover:bg-orange-100">
-                        <Music size={14} /> Bật nhạc niệm Phật
+                    <button className="flex items-center gap-2 px-4 py-2 border rounded-xl font-black text-xs shadow-sm transition-all bg-blue-50 text-blue-700 border-blue-100 hover:bg-blue-100">
+                        <Music size={14} /> Bật nhạc cầu nguyện
                     </button>
                     <button className="flex items-center gap-2 px-4 py-2 bg-white border border-black/10 rounded-xl font-black text-xs shadow-sm hover:bg-gray-50 transition-all">
                         <Share2 size={14} /> Chia sẻ phòng
@@ -209,17 +204,17 @@ export function BuddhaRoom() {
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 items-start">
                 <aside className="lg:col-span-2 bg-white border border-black/5 rounded-[30px] p-6 shadow-sm h-full">
-                    <h3 className="font-black text-[14x] uppercase mb-6 border-b border-black/5 pb-2 text-orange-600">Thông tin phòng</h3>
+                    <h3 className="font-black text-[14x] uppercase mb-6 border-b border-black/5 pb-2 text-blue-700">Thông tin phòng</h3>
                     <div className="space-y-6">
                         {roomLoading && <p className="text-[11px] font-bold text-gray-400">Đang tải...</p>}
                         <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase mb-2 flex items-center gap-2"><GiLotus size={12} /> Tên phòng:</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase mb-2 flex items-center gap-2"><FaCross size={11} /> Tên phòng:</p>
                             <p className="text-sm font-black text-black">{roomName}</p>
                         </div>
                         <div>
                             <p className="text-[10px] font-black text-gray-400 uppercase mb-2 flex items-center gap-2"><Target size={12} /> ID phòng:</p>
                             <div className="flex items-center justify-between bg-gray-50 px-3 py-2 rounded-lg border border-black/5">
-                                <span className="text-[11px] font-black text-orange-600">{roomId}</span>
+                                <span className="text-[11px] font-black text-blue-700">{roomId}</span>
                                 <button onClick={handleCopy} className="text-[9px] font-black text-gray-400 hover:text-black uppercase">{copied ? "Xong!" : "Sao chép"}</button>
                             </div>
                         </div>
@@ -227,11 +222,11 @@ export function BuddhaRoom() {
                             <p className="text-[10px] font-black text-gray-400 uppercase mb-2 flex items-center gap-2"><User size={12} /> Chủ trì phòng:</p>
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center border border-black/5"><User size={16} className="text-gray-400" /></div>
-                                <p className="text-[11px] font-black">{ROOM_DATA.host.name} <span className="text-[8px] bg-orange-100 text-orange-600 px-1.5 py-0.5 rounded ml-1">Chủ trì</span></p>
+                                <p className="text-[11px] font-black">{ROOM_DATA.host.name} <span className="text-[8px] bg-blue-100 text-blue-700 px-1.5 py-0.5 rounded ml-1">Chủ trì</span></p>
                             </div>
                         </div>
                         <div>
-                            <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Tổng lượt lạy trong phòng:</p>
+                            <p className="text-[10px] font-black text-gray-400 uppercase mb-2">Tổng lượt cầu nguyện:</p>
                             <p className="text-xl font-black text-black"><AnimatedNumber value={roomTotalPrayers} /> lượt</p>
                         </div>
                     </div>
@@ -239,27 +234,22 @@ export function BuddhaRoom() {
 
                 <main className="lg:col-span-8 flex flex-col gap-6 h-full">
                     <div className="bg-white border border-black/10 rounded-[40px] p-8 shadow-sm h-full flex flex-col relative overflow-visible">
-                        <h3 className="text-center font-black text-[14px] uppercase text-orange-600">Top 5 Phật tử lạy nhiều nhất</h3>
+                        <h3 className="text-center font-black text-[14px] uppercase text-blue-700">Top 5 người cầu nguyện nhiều nhất</h3>
                         <div className="grid grid-cols-5 gap-3 items-center flex-1 min-h-[420px]">
                             {TOP_PRAYERS.map((prayer, i) => (
                                 <div key={i} className={`relative flex flex-col group transition-all duration-500 ${prayer.rank === 1 ? 'h-[85%]' : 'h-[70%]'}`}>
-                                    <div className={`relative flex-1 rounded-[25px] overflow-hidden border-2 transition-all duration-500 z-10 ${prayer.rank === 1 ? 'border-amber-400 shadow-[0_15px_40px_rgba(251,191,36,0.15)] ring-4 ring-amber-400/10' : 'border-black/5 shadow-sm'}`}>
+                                    <div className={`relative flex-1 rounded-[25px] overflow-hidden border-2 transition-all duration-500 z-10 ${prayer.rank === 1 ? 'border-blue-400 shadow-[0_15px_40px_rgba(37,99,235,0.15)] ring-4 ring-blue-400/10' : 'border-black/5 shadow-sm'}`}>
                                         <img src="/images/img-7.png" alt={prayer.name} className="absolute inset-0 w-full h-full object-cover" />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent z-10"></div>
                                         {prayer.rank !== 1 && prayer.isLive && (
                                             <div className="absolute top-3 left-3 bg-red-600 text-white px-2 py-0.5 rounded-full text-[7px] font-black flex items-center gap-1 z-20 animate-pulse uppercase"><Radio size={8} /> Live</div>
                                         )}
                                         <div className={`absolute bottom-0 left-0 right-0 p-3 z-20 text-center flex flex-col items-center ${prayer.rank === 1 ? 'pb-8' : 'pb-3'}`}>
-                                            <div className={`w-6 h-6 rounded-full border border-white/20 flex items-center justify-center font-black text-[10px] mb-2 shadow-lg ${prayer.rank === 1 ? 'bg-amber-400 text-white scale-110' : 'bg-white/20 text-white backdrop-blur-md'}`}>{prayer.rank}</div>
+                                            <div className={`w-6 h-6 rounded-full border border-white/20 flex items-center justify-center font-black text-[10px] mb-2 shadow-lg ${prayer.rank === 1 ? 'bg-blue-600 text-white scale-110' : 'bg-white/20 text-white backdrop-blur-md'}`}>{prayer.rank}</div>
                                             <p className={`font-black leading-tight truncate text-white w-full ${prayer.rank === 1 ? 'text-sm mb-0.5' : 'text-[10px]'}`}>{prayer.name}</p>
-                                            <p className="font-bold text-orange-400 text-[8px]">{prayer.count} lượt lạy</p>
+                                            <p className="font-bold text-blue-400 text-[8px]">{prayer.count} lượt</p>
                                         </div>
                                     </div>
-                                    {prayer.rank === 1 && (
-                                        <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 w-[130%] pointer-events-none z-30">
-                                            <img src="/images/lotus-pedestal.png" alt="Lotus Pedestal" className="w-full h-auto object-contain drop-shadow-[0_-5px_15px_rgba(251,191,36,0.5)]" />
-                                        </div>
-                                    )}
                                 </div>
                             ))}
                         </div>
@@ -268,18 +258,18 @@ export function BuddhaRoom() {
 
                 <aside className="lg:col-span-2 bg-white border border-black/5 rounded-[30px] p-6 shadow-sm h-full">
                     <div className="flex items-center gap-3 mb-6">
-                        <div className="w-6 h-6 bg-green-50 rounded-xl flex items-center justify-center border border-green-100 shadow-sm"><PiMountainsFill size={14} className="text-green-600" /></div>
-                        <h3 className="font-black text-[12px] text-gray-500">Cam hiện tại: <span className="text-green-600 ml-1">{CAMP_DATA.name}</span></h3>
+                        <div className="w-6 h-6 bg-blue-50 rounded-xl flex items-center justify-center border border-blue-100 shadow-sm"><PiMountainsFill size={14} className="text-blue-700" /></div>
+                        <h3 className="font-black text-[12px] text-gray-500">Cam hiện tại: <span className="text-blue-700 ml-1">{CAMP_DATA.name}</span></h3>
                     </div>
                     <div className="w-full rounded-[20px] overflow-hidden border border-black/5 mb-6"><img src="/images/img-10.png" alt="Camp" className="w-full h-full object-contain" /></div>
                     <div className="mb-6">
                         <div className="flex flex-col xl:flex-row xl:justify-between text-[12px] font-black uppercase mb-2 gap-1"><span className="text-black">Cấp độ {CAMP_DATA.level}</span><span className="text-gray-400 text-[10px]">{CAMP_DATA.currentXP}/{CAMP_DATA.maxXP}</span></div>
-                        <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden border border-black/5"><div className="h-full bg-green-500 rounded-full w-[65%]"></div></div>
+                        <div className="w-full h-2.5 bg-gray-100 rounded-full overflow-hidden border border-black/5"><div className="h-full bg-blue-500 rounded-full w-[45%]"></div></div>
                     </div>
                     <p className="text-[12px] font-black text-black mb-3 uppercase">Lợi ích camp:</p>
                     <ul className="space-y-3">
                         {CAMP_DATA.benefits.map((b, i) => (
-                            <li key={i} className="flex items-start gap-2 text-[10px] font-bold text-gray-500"><Star size={12} className="text-amber-400 fill-amber-400 mt-0.5" />{b}</li>
+                            <li key={i} className="flex items-start gap-2 text-[10px] font-bold text-gray-500"><Star size={12} className="text-blue-400 fill-blue-400 mt-0.5" />{b}</li>
                         ))}
                     </ul>
                 </aside>
@@ -288,7 +278,7 @@ export function BuddhaRoom() {
             <section className="mt-8 grid grid-cols-1 lg:grid-cols-12 gap-6 pb-20">
                 <div className="lg:col-span-3 flex flex-col gap-6">
                     <div className="bg-white border border-black/10 rounded-[30px] p-6 shadow-sm flex flex-col h-[450px]">
-                        <h3 className="font-black text-[16px] text-orange-600 uppercase tracking-widest mb-4">Trò chuyện</h3>
+                        <h3 className="font-black text-[16px] text-blue-700 uppercase tracking-widest mb-4">Trò chuyện</h3>
                         <div className="flex-1 overflow-y-auto space-y-4 custom-scrollbar pr-1">
                             {CHAT_MESSAGES.map((m, i) => (
                                 <div key={i} className="flex gap-3">
@@ -297,7 +287,7 @@ export function BuddhaRoom() {
                                 </div>
                             ))}
                         </div>
-                        <div className="mt-4 relative"><input type="text" placeholder="Nhập tin nhắn..." className="w-full bg-gray-50 border border-black/5 rounded-2xl px-4 py-3 text-xs font-bold outline-none" /><button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-orange-500 text-white rounded-xl flex items-center justify-center"><ArrowRight size={14} /></button></div>
+                        <div className="mt-4 relative"><input type="text" placeholder="Nhập lời cầu nguyện..." className="w-full bg-gray-50 border border-black/5 rounded-2xl px-4 py-3 text-xs font-bold outline-none" /><button className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-blue-600 text-white rounded-xl flex items-center justify-center"><ArrowRight size={14} /></button></div>
                     </div>
                 </div>
 
@@ -305,29 +295,23 @@ export function BuddhaRoom() {
                     <div className="absolute top-0 left-0 right-0 z-50 pointer-events-none">
                         <AnimatePresence>
                             {prayerBursts.map((burst) => (
-                                <motion.div key={burst.id} initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: -45, scale: 1 }} exit={{ opacity: 0, y: -70 }} className="absolute right-6 top-10 rounded-full bg-orange-500 px-4 py-2 text-sm font-black text-white shadow-lg">+1</motion.div>
+                                <motion.div key={burst.id} initial={{ opacity: 0, y: 20, scale: 0.8 }} animate={{ opacity: 1, y: -45, scale: 1 }} exit={{ opacity: 0, y: -70 }} className="absolute right-6 top-10 rounded-full bg-blue-600 px-4 py-2 text-sm font-black text-white shadow-lg">+1</motion.div>
                             ))}
                         </AnimatePresence>
                     </div>
 
                     <div className="flex items-center justify-between mb-8">
-                        <h3 className="font-black text-xs uppercase text-orange-600 tracking-widest">Cộng đồng Phật tử đang lạy ({COMMUNITY_CAMS.length})</h3>
+                        <h3 className="font-black text-xs uppercase text-blue-700 tracking-widest">Cộng đồng đang cầu nguyện ({COMMUNITY_CAMS.length})</h3>
                         <div className="relative">
-                            <button onClick={() => setIsSortOpen(!isSortOpen)} className="flex items-center gap-3 bg-gray-50 border border-black/5 rounded-2xl px-4 py-2 shadow-sm hover:border-orange-200 transition-all"><span className="text-[10px] font-black text-gray-400 uppercase">Sắp xếp:</span><span className="text-[10px] font-black text-orange-600 uppercase">{sortBy === "count" ? "Lượt lạy" : sortBy === "rank" ? "Thứ hạng" : "Tên"}</span><Settings size={12} className={`text-orange-400 transition-transform ${isSortOpen ? 'rotate-180' : ''}`} /></button>
-                            <AnimatePresence>{isSortOpen && (
-                                <><div className="fixed inset-0 z-[90]" onClick={() => setIsSortOpen(false)} /><motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} className="absolute top-full right-0 mt-2 w-48 bg-white border border-black/10 rounded-[24px] shadow-xl p-2 z-[100] overflow-hidden">
-                                    {["count", "rank", "name"].map((opt) => (
-                                        <button key={opt} onClick={() => { setSortBy(opt as any); setIsSortOpen(false); }} className={`w-full text-left px-4 py-3 rounded-xl text-[10px] font-black uppercase mb-1 ${sortBy === opt ? "bg-orange-500 text-white shadow-md" : "text-gray-600 hover:bg-orange-50"}`}>{opt}</button>
-                                    ))}</motion.div></>
-                            )}</AnimatePresence>
+                            <button onClick={() => setIsSortOpen(!isSortOpen)} className="flex items-center gap-3 bg-gray-50 border border-black/5 rounded-2xl px-4 py-2 shadow-sm hover:border-blue-200 transition-all"><span className="text-[10px] font-black text-gray-400 uppercase">Sắp xếp:</span><span className="text-[10px] font-black text-blue-700 uppercase">{sortBy === "count" ? "Lượt lạy" : sortBy === "rank" ? "Thứ hạng" : "Tên"}</span><Settings size={12} className={`text-blue-400 transition-transform ${isSortOpen ? 'rotate-180' : ''}`} /></button>
                         </div>
                     </div>
 
                     <div className="grid grid-cols-4 md:grid-cols-5 gap-3 flex-1 overflow-y-auto pr-1 custom-scrollbar min-h-[450px]">
                         {sortedCams.slice(0, 20).map((cam, i) => (
                             <div key={i} className="flex flex-col gap-2 group cursor-pointer">
-                                <div className="relative aspect-square rounded-2xl overflow-hidden border border-black/5"><img src="/images/img-7.png" alt={cam.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" /><div className="absolute inset-0 bg-black/20"></div><div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-[9px] font-black text-white flex items-center justify-center">{cam.rank}</div><div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-green-500 shadow-[0_0_8px_#22c55e]"></div></div>
-                                <div className="text-center"><p className="text-[10px] font-black text-black leading-none truncate px-1">{cam.name}</p><p className="text-[9px] font-bold text-orange-500 mt-1">{cam.count} lạy</p></div>
+                                <div className="relative aspect-square rounded-2xl overflow-hidden border border-black/5"><img src="/images/img-7.png" alt={cam.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform" /><div className="absolute inset-0 bg-black/20"></div><div className="absolute top-2 left-2 w-5 h-5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-[9px] font-black text-white flex items-center justify-center">{cam.rank}</div><div className="absolute top-2 right-2 w-2 h-2 rounded-full bg-blue-500 shadow-[0_0_8px_#3b82f6]"></div></div>
+                                <div className="text-center"><p className="text-[10px] font-black text-black leading-none truncate px-1">{cam.name}</p><p className="text-[9px] font-bold text-blue-600 mt-1">{cam.count} lượt</p></div>
                             </div>
                         ))}
                     </div>
@@ -335,17 +319,17 @@ export function BuddhaRoom() {
                     <div className="mt-6">
                         <PoseTracker roomId={roomId} userId={user?.id} onPrayerDetected={handleAIPrayer} roomCurrentCount={room?.current_count} />
                         {roomStats?.roomId === roomId && roomStats.roomTotal !== undefined && (
-                            <p className="mt-3 text-center text-[11px] font-black uppercase text-orange-600">Realtime: {roomStats.roomTotal} lượt</p>
+                            <p className="mt-3 text-center text-[11px] font-black uppercase text-blue-700">Realtime: {roomStats.roomTotal} lượt</p>
                         )}
                     </div>
 
                     <div className="mt-8 pt-6 border-t border-black/5 flex flex-col md:flex-row items-center justify-center md:justify-between gap-8 md:gap-4 px-4">
                         <div className="flex items-center gap-4 lg:gap-8 order-2 md:order-1">
-                            <button className="flex flex-col items-center gap-2 group"><div className="p-3 bg-gray-50 rounded-2xl border border-black/5 group-hover:bg-orange-50 transition-all shadow-sm"><Video size={18} className="text-gray-400 group-hover:text-orange-500" /></div><span className="text-[9px] font-black text-gray-400 uppercase">Mở camera</span></button>
-                            <button className="flex flex-col items-center gap-2 group"><div className="p-3 bg-gray-50 rounded-2xl border border-black/5 group-hover:bg-blue-50 transition-all shadow-sm"><Mic size={18} className="text-gray-400 group-hover:text-blue-500" /></div><span className="text-[9px] font-black text-gray-400 uppercase">Bật mic</span></button>
+                            <button className="flex flex-col items-center gap-2 group"><div className="p-3 bg-gray-50 rounded-2xl border border-black/5 group-hover:bg-blue-50 transition-all shadow-sm"><Video size={18} className="text-gray-400 group-hover:text-blue-500" /></div><span className="text-[9px] font-black text-gray-400 uppercase">Mở camera</span></button>
+                            <button className="flex flex-col items-center gap-2 group"><div className="p-3 bg-gray-50 rounded-2xl border border-black/5 group-hover:bg-cyan-50 transition-all shadow-sm"><Mic size={18} className="text-gray-400 group-hover:text-cyan-500" /></div><span className="text-[9px] font-black text-gray-400 uppercase">Bật mic</span></button>
                         </div>
-                        <button onClick={handleAIPrayer} className="order-1 md:order-2 bg-orange-500 hover:bg-orange-400 text-white px-10 py-3.5 rounded-[22px] font-black text-sm border-2 border-black shadow-[4px_4px_0_0_#000] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 w-4/5 md:w-auto min-w-[200px]">
-                            <span className="text-xl lg:text-2xl animate-pulse">⏸️</span> <span className="tracking-tighter uppercase">Tạm dừng lạy</span>
+                        <button onClick={handleAIPrayer} className="order-1 md:order-2 bg-blue-600 hover:bg-blue-500 text-white px-10 py-3.5 rounded-[22px] font-black text-sm border-2 border-black shadow-[4px_4px_0_0_#000] active:translate-y-1 active:shadow-none transition-all flex items-center justify-center gap-3 w-4/5 md:w-auto min-w-[200px]">
+                            <span className="text-xl lg:text-2xl animate-pulse">🙏</span> <span className="tracking-tighter uppercase">Cầu nguyện</span>
                         </button>
                         <div className="flex items-center gap-4 lg:gap-8 order-3">
                             <button className="flex flex-col items-center gap-2 group"><div className="p-3 bg-gray-50 rounded-2xl border border-black/5 group-hover:bg-red-50 transition-all shadow-sm"><UserRoundX size={18} className="text-gray-400 group-hover:text-red-500" /></div><span className="text-[9px] font-black text-gray-400 uppercase">Kích người</span></button>
@@ -356,34 +340,11 @@ export function BuddhaRoom() {
 
                 <div className="lg:col-span-3 flex flex-col gap-6">
                     <div className="bg-white border border-black/10 rounded-[30px] p-6 shadow-sm">
-                        <h3 className="font-black text-[16px] text-orange-600 uppercase tracking-widest mb-6">Thành tích phòng</h3>
+                        <h3 className="font-black text-[16px] text-blue-700 uppercase tracking-widest mb-6">Thành tích phòng</h3>
                         <div className="space-y-5">
-                            <div className="flex items-center justify-between"><div className="flex items-center gap-3 text-xs font-bold text-gray-400"><Flame size={16} className="text-orange-400" /> Tổng lượt lạy</div><span className="text-sm font-black">1,248,000 lượt</span></div>
-                            <div className="flex items-center justify-between"><div className="flex items-center gap-3 text-xs font-bold text-gray-400"><Star size={16} className="text-yellow-400" /> Ngày lạy nhiều nhất</div><span className="text-sm font-black">25,680 lượt</span></div>
-                            <div className="flex items-center justify-between"><div className="flex items-center gap-3 text-xs font-bold text-gray-400"><CalendarDays size={16} className="text-red-400" /> Chuỗi ngày lạy</div><span className="text-sm font-black">7 ngày</span></div>
-                        </div>
-                        <div className="mt-8 border-t border-black/5 pt-6 flex items-center justify-between">
-                            <div><p className="text-[10px] font-black text-gray-400 uppercase mb-3">Huy hiệu</p>
-                                <div className="flex gap-2"><div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center border border-orange-200 shadow-sm"><CircleStar size={18} color="#f54a00" /></div><div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center border border-orange-200 shadow-sm"><ShieldCheck size={18} color="#f54a00" /></div><div className="w-9 h-9 rounded-full bg-orange-100 flex items-center justify-center border border-orange-200 shadow-sm"><Anvil size={18} color="#f54a00" /></div></div>
-                            </div>
-                            <button className="mt-4 px-4 py-2 bg-orange-50 border border-orange-100 rounded-xl font-black text-[10px] text-orange-600 uppercase hover:bg-orange-100 transition-all shadow-sm active:scale-95">Xem tất cả</button>
-                        </div>
-                    </div>
-
-                    <div className="bg-white border border-black/10 rounded-[30px] p-6 shadow-sm">
-                        <h3 className="font-black text-[16px] text-orange-600 uppercase mb-4">Mục tiêu phòng</h3>
-                        <p className="text-xl font-black text-black mb-4">1,000,000 <span className="text-[12px] text-gray-400">lượt lạy</span></p>
-                        <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden border border-black/5 mb-4"><div className="h-full bg-green-500 rounded-full w-[62%]"></div></div>
-                        <div className="flex justify-between text-[12px] font-bold text-gray-500"><span>Hiện tại: 628,741</span><span>Còn lại: 371,259</span></div>
-                    </div>
-
-                    <div className="bg-white border border-black/10 rounded-[30px] p-6 shadow-sm">
-                        <h3 className="font-black text-[14px] text-orange-600 uppercase mb-4">Danh sách (128)</h3>
-                        <div className="space-y-3">
-                            {COMMUNITY_CAMS.slice(0, 5).map((user, i) => (
-                                <div key={i} className="flex items-center justify-between"><div className="flex items-center gap-2"><div className="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center border border-black/5"><User size={12} className="text-gray-400" /></div><span className="text-[12px] font-black text-black">{user.name}</span></div><div className="w-1.5 h-1.5 rounded-full bg-green-500"></div></div>
-                            ))}
-                            <p className="text-center pt-2 text-[9px] font-bold text-gray-400">... và 118 người khác</p>
+                            <div className="flex items-center justify-between"><div className="flex items-center gap-3 text-xs font-bold text-gray-400"><Flame size={16} className="text-blue-500" /> Tổng lượt cầu nguyện</div><span className="text-sm font-black">7,138,284 lượt</span></div>
+                            <div className="flex items-center justify-between"><div className="flex items-center gap-3 text-xs font-bold text-gray-400"><Star size={16} className="text-yellow-400" /> Ngày nhiều nhất</div><span className="text-sm font-black">12,548 lượt</span></div>
+                            <div className="flex items-center justify-between"><div className="flex items-center gap-3 text-xs font-bold text-gray-400"><CalendarDays size={16} className="text-red-400" /> Chuỗi ngày lạy</div><span className="text-sm font-black">5 ngày</span></div>
                         </div>
                     </div>
                 </div>

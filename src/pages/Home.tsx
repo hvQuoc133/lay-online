@@ -19,8 +19,7 @@ interface BackendRoom {
 
 export function Home() {
   const navigate = useNavigate();
-  const { state, pray, joinRoom, leaveRoom } = usePrayerContext();
-  const [activeRoom, setActiveRoom] = useState<"buddha" | "jesus" | null>(null);
+  const { state, pray } = usePrayerContext();
   const [showPrayAnimation, setShowPrayAnimation] = useState(false);
   const [rooms, setRooms] = useState<BackendRoom[]>([]);
 
@@ -45,22 +44,9 @@ export function Home() {
   };
 
   const handleJoinRoom = (room: "buddha" | "jesus") => {
-    const targetRoom = rooms.find((item) => item.type === room);
-
-    if (!targetRoom) {
-      alert(room === "buddha" ? "Chưa có phòng Phật nào. Admin cần tạo phòng trước." : "Chưa có phòng Chúa nào. Admin cần tạo phòng trước.");
-      return;
-    }
-
-    if (activeRoom === room) {
-      leaveRoom(room);
-      setActiveRoom(null);
-    } else {
-      if (activeRoom) leaveRoom(activeRoom);
-      joinRoom(room);
-      setActiveRoom(room);
-      navigate(room === "buddha" ? `/buddhaRoom/${targetRoom.id}` : `/jesusRoom/${targetRoom.id}`);
-    }
+    // *** NAVIGATE TO ROOM SELECTION PAGE ***
+    // User sẽ chọn phòng từ danh sách (có auth check)
+    navigate(`/rooms/${room}`);
   };
 
   const buddhaRoom = rooms.find((room) => room.type === "buddha");
@@ -152,22 +138,22 @@ export function Home() {
             </div>
           </div>
 
-          <div className={`h-full bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl border-2 border-yellow-400 shadow-lg relative overflow-hidden transition-all duration-300 ${activeRoom === 'buddha' ? 'ring-4 ring-yellow-400 scale-105 z-10' : 'hover:scale-[1.01]'}`}>
+          <div className={`h-full bg-gradient-to-br from-yellow-50 to-orange-100 rounded-3xl border-2 border-yellow-400 shadow-lg relative overflow-hidden transition-all duration-300 hover:scale-[1.01]`}>
             <div className="flex flex-col sm:flex-row h-full w-full">
               <div className="p-6 md:p-8 flex-1 relative z-10 pb-8 sm:pb-8 max-w-full sm:max-w-[60%]">
                 <div className="mb-4 relative group">
                   <GiLotus className="w-16 h-16 text-amber-500 drop-shadow-[0_2px_10px_rgba(245,158,11,0.5)] transition-transform duration-500 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-amber-400/20 blur-xl rounded-full -z-10 animate-pulse"></div>
                 </div>
-                <h2 className="text-2xl lg:text-2xl font-black font-display text-orange-600 mb-2">{buddhaRoom?.name ?? "PHÒNG TÍCH ĐỨC"}</h2>
+                <h2 className="text-2xl lg:text-2xl font-black font-display text-orange-600 mb-2">PHÒNG TÍCH ĐỨC</h2>
                 <p className="font-bold text-gray-800 mb-4">Lạy để tâm an, phúc đến</p>
                 <ul className="space-y-2 mb-6 font-bold text-sm text-gray-700">
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Cầu bình an</li>
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Tích phúc đức</li>
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Giảm stress hiệu quả</li>
                 </ul>
-                <button onClick={() => handleJoinRoom('buddha')} className={`w-full sm:w-auto px-6 py-3 rounded-xl font-black shadow-solid transition-transform active:translate-y-1 active:shadow-none border-2 border-black ${activeRoom === 'buddha' ? 'bg-orange-500 text-white' : 'bg-yellow-400 text-black hover:bg-yellow-300'}`}>
-                  {activeRoom === 'buddha' ? 'Rời phòng lạy 🙏' : 'Vào phòng lạy Phật 🙏'}
+                <button onClick={() => handleJoinRoom('buddha')} className={`w-full sm:w-auto px-6 py-3 rounded-xl font-black shadow-solid transition-transform active:translate-y-1 active:shadow-none border-2 border-black bg-yellow-400 text-black hover:bg-yellow-300`}>
+                  Vào phòng bái lạy 🙏
                 </button>
                 <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 mt-5">
                   <Users className="w-4 h-4" />
@@ -194,22 +180,22 @@ export function Home() {
             </div>
           </div>
 
-          <div className={`h-full bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl border-2 border-blue-400 shadow-lg relative overflow-hidden transition-all duration-300 ${activeRoom === 'jesus' ? 'ring-4 ring-blue-400 scale-105 z-10' : 'hover:scale-[1.01]'}`}>
+          <div className={`h-full bg-gradient-to-br from-blue-50 to-blue-100 rounded-3xl border-2 border-blue-400 shadow-lg relative overflow-hidden transition-all duration-300 hover:scale-[1.01]`}>
             <div className="flex flex-col sm:flex-row h-full w-full">
               <div className="p-6 md:p-8 flex-1 relative z-10 pb-8 sm:pb-8 max-w-full sm:max-w-[60%]">
                 <div className="mb-4 relative group">
                   <FaCross className="w-14 h-14 text-blue-700 drop-shadow-[0_2px_10px_rgba(29,78,216,0.4)] transition-transform duration-500 group-hover:rotate-12" />
                   <div className="absolute inset-0 bg-blue-400/10 blur-xl rounded-full -z-10 animate-pulse"></div>
                 </div>
-                <h2 className="text-2xl lg:text-2xl font-black font-display text-blue-700 mb-2">{jesusRoom?.name ?? "PHÒNG CẦU NGUYỆN"}</h2>
+                <h2 className="text-2xl lg:text-2xl font-black font-display text-blue-700 mb-2">PHÒNG CẦU NGUYỆN</h2>
                 <p className="font-bold text-gray-800 mb-4">Cầu nguyện để yêu thương lan tỏa</p>
                 <ul className="space-y-2 mb-6 font-bold text-sm text-gray-700">
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Xin ơn bình an</li>
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Sống tốt mỗi ngày</li>
                   <li className="flex items-center gap-2"><CheckCircle2 className="w-5 h-5 text-green-500 fill-green-100" /> Yêu thương mọi người</li>
                 </ul>
-                <button onClick={() => handleJoinRoom('jesus')} className={`w-full sm:w-auto px-6 py-3 rounded-xl font-black shadow-solid transition-transform active:translate-y-1 active:shadow-none border-2 border-black ${activeRoom === 'jesus' ? 'bg-blue-600 text-white' : 'bg-blue-500 text-white hover:bg-blue-400'}`}>
-                  {activeRoom === 'jesus' ? 'Rời phòng cầu nguyện 🙏' : 'Vào phòng cầu nguyện 🙏'}
+                <button onClick={() => handleJoinRoom('jesus')} className={`w-full sm:w-auto px-6 py-3 rounded-xl font-black shadow-solid transition-transform active:translate-y-1 active:shadow-none border-2 border-black bg-blue-500 text-white hover:bg-blue-400`}>
+                  Vào phòng cầu nguyện 🙏
                 </button>
                 <div className="mt-4 flex items-center gap-2 text-sm font-bold text-gray-600 mt-5">
                   <Users className="w-4 h-4" />

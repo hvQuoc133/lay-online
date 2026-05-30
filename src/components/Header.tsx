@@ -34,7 +34,7 @@ export function Header() {
               <h1 className="font-display font-bold text-lg sm:text-xl uppercase tracking-tighter leading-none text-black">
                 Lạy Online
               </h1>
-              <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-600 font-medium pt-1 leading-tight">
+              <p className="text-[9px] sm:text-[10px] md:text-xs text-gray-600 font-medium pt-1 leading-tight lg:hidden xl:block">
                 Lạy là có phúc, <br className="sm:hidden" /> không lạy cũng... có phúc!
               </p>
             </div>
@@ -42,7 +42,7 @@ export function Header() {
         </div>
 
         {/* DESKTOP NAV */}
-        <nav className="hidden lg:flex items-center gap-8 font-bold text-sm">
+        <nav className="hidden lg:flex items-center gap-8 xl:gap-5 font-bold text-sm">
           {navLinks.map((link) => (
             <NavLink
               key={link.name}
@@ -60,10 +60,10 @@ export function Header() {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-4 z-[110]">
-          <div className="hidden sm:flex items-center gap-2 text-xs font-bold bg-white/50 px-3 py-1.5 rounded-full border border-black/10">
+          <div className="hidden lg:hidden 2xl:flex items-center gap-2 xl:gap-1 text-xs font-bold bg-white/50 px-3 py-1.5 rounded-full border border-black/10">
             <Users className="w-3.5 h-3.5 text-green-600" />
-            <span className="text-green-600"><AnimatedNumber value={state.onlineMembers} /></span>
-            <span className="hidden xl:inline text-green-600"> đang lạy</span>
+            <span className="text-green-600"><AnimatedNumber value={state.onlineMembers}/></span>
+            <span className="xl:inline text-green-600"> đang lạy</span>
           </div>
 
           {user ? (
@@ -138,7 +138,7 @@ export function Header() {
                       key={link.name}
                       to={link.path}
                       onClick={() => setIsMenuOpen(false)}
-                      className={`text-3xl font-black uppercase tracking-tighter transition-all ${link.active ? "text-orange-500" : "text-black hover:text-orange-500"
+                      className={`text-2xl font-black tracking-tighter transition-all ${link.active ? "text-orange-500" : "text-black hover:text-orange-500"
                         }`}
                     >
                       {link.name}
@@ -146,7 +146,7 @@ export function Header() {
                   ))}
                 </div>
 
-                <div className="mt-12">
+                <div className="mt-5">
                   <div className="flex items-center gap-4 bg-gray-200/50 p-6 rounded-[25px] border border-black/5">
                     <div className="bg-white p-3 rounded-2xl shadow-sm">
                       <Users className="w-8 h-8 text-green-600" />

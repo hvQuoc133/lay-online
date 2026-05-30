@@ -18,7 +18,7 @@ export function UserLogin() {
         e.preventDefault();
         setError("");
         try {
-            const response = await fetch("/api/login", {
+            const response = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ email, password, rememberMe }),
@@ -38,7 +38,7 @@ export function UserLogin() {
     const handleGoogleLogin = useGoogleLogin({
         onSuccess: async (tokenResponse) => {
             try {
-                const res = await fetch("/api/google-login", {
+                const res = await fetch("/api/auth/google-login", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ token: tokenResponse.access_token }),

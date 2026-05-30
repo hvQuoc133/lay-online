@@ -9,6 +9,7 @@ interface PoseTrackerProps {
   roomId: string;
   userId?: number;
   onPrayerDetected: () => void;
+  roomCurrentCount?: number;  // ← Nhận số người hiện tại
 }
 
 const CALIBRATION_MS = 3000;
@@ -19,12 +20,16 @@ function getKeypoint(pose: PoseDetection.Pose, name: string) {
   return pose.keypoints.find((keypoint) => keypoint.name === name);
 }
 
-export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerProps) {
+export function PoseTracker({ roomId, userId, onPrayerDetected, roomCurrentCount = 0 }: PoseTrackerProps) {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const detectorRef = useRef<PoseDetection.PoseDetector | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const animationRef = useRef<number | null>(null);
+  const calibrationIntervalRef = useRef<number | null>(null);
+  const calibrationTimeoutRef = useRef<number | null>(null);
+  const runIdRef = useRef(0);
+  const stopRequestedRef = useRef(false);
   const bowStateRef = useRef<BowState>("ready");
   const lastPrayerAtRef = useRef(0);
   const calibrationSamplesRef = useRef<number[]>([]);
@@ -39,16 +44,35 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
   const [handsClasped, setHandsClasped] = useState(false);
 
   const stopTracking = () => {
+    runIdRef.current += 1;
+    stopRequestedRef.current = true;
+
     if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
       animationRef.current = null;
+    }
+
+    if (calibrationIntervalRef.current) {
+      window.clearInterval(calibrationIntervalRef.current);
+      calibrationIntervalRef.current = null;
+    }
+
+    if (calibrationTimeoutRef.current) {
+      window.clearTimeout(calibrationTimeoutRef.current);
+      calibrationTimeoutRef.current = null;
     }
 
     streamRef.current?.getTracks().forEach((track) => track.stop());
     streamRef.current = null;
 
     if (videoRef.current) {
+      videoRef.current.pause();
       videoRef.current.srcObject = null;
+    }
+
+    const context = canvasRef.current?.getContext("2d");
+    if (canvasRef.current && context) {
+      context.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
     }
 
     bowStateRef.current = "ready";
@@ -144,15 +168,22 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
   };
 
   const detectLoop = async () => {
+    if (stopRequestedRef.current) return;
+
     const detector = detectorRef.current;
     const video = videoRef.current;
 
     if (!detector || !video || video.readyState < 2) {
-      animationRef.current = requestAnimationFrame(detectLoop);
+      if (!stopRequestedRef.current) {
+        animationRef.current = requestAnimationFrame(detectLoop);
+      }
       return;
     }
 
     const poses = await detector.estimatePoses(video, { maxPoses: 1, flipHorizontal: true });
+
+    if (stopRequestedRef.current) return;
+
     const pose = poses[0];
 
     if (pose) {
@@ -160,10 +191,16 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
       detectPrayerGesture(pose);
     }
 
-    animationRef.current = requestAnimationFrame(detectLoop);
+    if (!stopRequestedRef.current) {
+      animationRef.current = requestAnimationFrame(detectLoop);
+    }
   };
 
   const startTracking = async () => {
+    const runId = runIdRef.current + 1;
+    runIdRef.current = runId;
+    stopRequestedRef.current = false;
+
     try {
       setError("");
       setStatus("loading");
@@ -174,8 +211,12 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
         import("@tensorflow/tfjs-backend-webgl"),
       ]).then(([tfModule, poseModule]) => [tfModule, poseModule] as const);
 
+      if (stopRequestedRef.current || runIdRef.current !== runId) return;
+
       await tf.setBackend("webgl");
       await tf.ready();
+
+      if (stopRequestedRef.current || runIdRef.current !== runId) return;
 
       detectorRef.current ??= await poseDetection.createDetector(
         poseDetection.SupportedModels.MoveNet,
@@ -183,6 +224,8 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
           modelType: poseDetection.movenet.modelType.SINGLEPOSE_LIGHTNING,
         }
       );
+
+      if (stopRequestedRef.current || runIdRef.current !== runId) return;
 
       const stream = await navigator.mediaDevices.getUserMedia({
         video: {
@@ -193,6 +236,11 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
         audio: false,
       });
 
+      if (stopRequestedRef.current || runIdRef.current !== runId) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+
       streamRef.current = stream;
 
       if (!videoRef.current) return;
@@ -200,15 +248,23 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
       videoRef.current.srcObject = stream;
       await videoRef.current.play();
 
+      if (stopRequestedRef.current || runIdRef.current !== runId) return;
+
       setStatus("calibrating");
       setCalibrationLeft(3);
 
-      const intervalId = window.setInterval(() => {
+      calibrationIntervalRef.current = window.setInterval(() => {
         setCalibrationLeft((value) => Math.max(0, value - 1));
       }, 1000);
 
-      window.setTimeout(() => {
-        window.clearInterval(intervalId);
+      calibrationTimeoutRef.current = window.setTimeout(() => {
+        if (stopRequestedRef.current || runIdRef.current !== runId) return;
+
+        if (calibrationIntervalRef.current) {
+          window.clearInterval(calibrationIntervalRef.current);
+          calibrationIntervalRef.current = null;
+        }
+
         const samples = calibrationSamplesRef.current;
         const averageHandY = samples.length
           ? samples.reduce((sum, sample) => sum + sample, 0) / samples.length
@@ -244,6 +300,7 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
   }, []);
 
   const isActive = status !== "idle" && status !== "error";
+  const isCameraDisabled = roomCurrentCount >= 25;  // ✅ Disable nếu >= 25 người
 
   return (
     <div className="bg-white border border-orange-100 rounded-[30px] p-4 shadow-sm">
@@ -253,7 +310,9 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
             <Sparkles size={12} /> Lay AI
           </p>
           <p className="text-[11px] font-bold text-gray-400 mt-1">
-            {status === "calibrating"
+            {isCameraDisabled
+              ? "❌ Phòng đã đủ 25 người mở camera, không thể bật"
+              : status === "calibrating"
               ? `Chap tay dung yen ${calibrationLeft}s de can chinh`
               : status === "tracking"
                 ? handsClasped
@@ -268,11 +327,15 @@ export function PoseTracker({ roomId, userId, onPrayerDetected }: PoseTrackerPro
         <button
           type="button"
           onClick={isActive ? stopTracking : startTracking}
-          disabled={status === "loading"}
+          disabled={status === "loading" || isCameraDisabled}
           className={`w-11 h-11 rounded-2xl border border-black/10 flex items-center justify-center shadow-sm transition-all ${
-            isActive ? "bg-red-50 text-red-500" : "bg-orange-50 text-orange-600 hover:bg-orange-100"
+            isCameraDisabled
+              ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+              : isActive
+                ? "bg-red-50 text-red-500"
+                : "bg-orange-50 text-orange-600 hover:bg-orange-100"
           }`}
-          title={isActive ? "Tat camera AI" : "Bat camera AI"}
+          title={isCameraDisabled ? "Phòng đã đủ 25 người mở camera" : isActive ? "Tắt camera AI" : "Bật camera AI"}
         >
           {status === "loading" ? (
             <Loader2 size={18} className="animate-spin" />

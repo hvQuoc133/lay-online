@@ -221,7 +221,7 @@ export function Instructions() {
                     <div className="w-full md:w-[260px] bg-white border border-black/5 rounded-2xl p-4 shadow-sm">
                         <div className="flex items-center gap-2 mb-3">
                             <span className="text-sm">🏔️</span>
-                            <p className="text-[12px] font-black text-green-600 uppercase tracking-tighter">Camp hiện tại: <span className="text-black">Chánh niệm</span></p>
+                            <p className="text-[12px] font-black text-green-600 uppercase tracking-tighter">Cam hiện tại: <span className="text-black">Chánh niệm</span></p>
                         </div>
                         <div className="w-full bg-gray-100 rounded-xl mb-4 overflow-hidden border border-black/5">
                             <img src="/images/img-9.png" alt="Camp BG" className="w-full h-full object-contain" />
